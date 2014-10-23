@@ -1,0 +1,106 @@
+# Descriptive analysis of genotype data
+
+## Setup
+
+### Require `ggplot2` and `plyr`
+
+
+```r
+require(ggplot2)
+require(plyr)
+```
+
+### Colors
+
+
+```r
+blue = rgb(0.330, 0.484, 0.828)
+light_blue = rgb(0.531, 0.639, 0.880)
+dark_blue = rgb(0.198, 0.290, 0.500)
+yellow = rgb(0.829, 0.680, 0.306)
+light_yellow = rgb(0.880, 0.776, 0.514)
+dark_yellow = rgb(0.497, 0.408, 0.183)
+```
+
+### Load marks file
+
+
+```r
+marks_data = read.table("../adata/marks_data_c.tsv", header = TRUE)
+```
+
+### Randomly subsample to a single parasite per subject
+
+
+```r
+subsample <- function(marks_data) {
+	shuffled = marks_data[sample(nrow(marks_data)),]
+	from = which(duplicated(shuffled[c("subject","sample","locus","mark_name")]))
+	to = which(duplicated(shuffled[c("subject","sample","locus","mark_name")], fromLast=TRUE))
+	sampled = shuffled[cbind(from,to), ]	
+	return(sampled)
+}
+```
+
+### Subset to a specific locus / mark combination
+
+
+```r
+marked_subset <- function(marks_data, input_locus, input_mark) {
+	sub = subset(marks_data, locus == input_locus & mark_name == input_mark)
+	return(sub)
+}
+```
+
+### Summarize mean and standard deviation of histogram bins across subsamples
+
+
+```r
+average_counts <- function(marks_data, input_locus, input_mark) {
+	tallies <- data.frame(mark_value= numeric(0), y= numeric(0), replicate = numeric(0))
+	for (i in 1:10) {
+		subsampled = subsample(marks_data)
+		subsetted = marked_subset(subsampled, input_locus, input_mark)
+		counts = ddply(subsetted, "mark_value", summarise, y = length(mark_value))
+		counts$replicate <- i
+		tallies <- rbind(tallies, counts)
+	}
+	summary = ddply(summary,~mark_value,summarise,mean=mean(y),sd=sd(y))
+	return(summary)
+}
+```
+
+### Build histogram from summary
+
+
+```r
+mark_histogram <- function(summary, xlabel) {
+	summary2 <- summary
+	summary2$mark_value <- factor(summary2$mark_value)
+	ggplot(summary2, aes(x=mark_value, y=mean)) +
+     geom_bar(position=position_dodge(), stat="identity", colour = dark_blue, fill = light_blue) +
+     geom_errorbar(aes(ymin=mean-sd, ymax=mean+sd), width=.2, position=position_dodge(.9)) +
+     xlab(xlabel) +
+     ylab("Count") +
+     theme_bw()
+}
+```
+
+## Analysis
+
+
+```r
+summary = average_counts(marks_data, "TEP", "hamming_3D7")
+```
+
+```
+## Error in eval(expr, envir, enclos): object 'y' not found
+```
+
+```r
+mark_histogram(summary, "Hamming distance TEP")
+```
+
+![plot of chunk unnamed-chunk-8](figure/unnamed-chunk-8-1.png) 
+
+
