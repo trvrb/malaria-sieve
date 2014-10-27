@@ -2,4 +2,4 @@
 
 ## Descriptive statistics of genotype data
 
-* [Results of genotype analysis](descriptive-statistics/descriptive-statistics.md)
+* [Results of genotype analysis](descriptive-analysis/descriptive-analysis.md)
