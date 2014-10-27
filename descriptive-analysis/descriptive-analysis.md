@@ -102,15 +102,26 @@ marked_subset <- function(marks_data, input_locus, input_mark) {
 }
 ```
 
+### New function curtesy of Michal
+
+```r
+getGtSample <- function(marks_data, input_locus, input_mark, seed=NULL) {
+	marks_data <- subset(marks_data, locus == input_locus & mark_name == input_mark)
+	if (!is.null(seed)){ set.seed(seed) }
+	marks_data <- marks_data[sample(NROW(marks_data)),]
+	idx <- which(!duplicated(marks_data$subject))
+	return(marks_data[idx,])
+}
+```
+
 ### Summarize mean and standard deviation of histogram bins across subsamples
 
 
 ```r
 average_counts <- function(marks_data, input_locus, input_mark) {
 	tallies <- data.frame(mark_value= numeric(0), y= numeric(0), replicate = numeric(0))
-	for (i in 1:10) {
-		subsampled = subsample(marks_data)
-		subsetted = marked_subset(subsampled, input_locus, input_mark)
+	for (i in 1:100) {
+		subsetted = getGtSample(marks_data, input_locus, input_mark)
 		counts = ddply(subsetted, "mark_value", summarise, y = length(mark_value))
 		counts$replicate <- i
 		tallies <- rbind(tallies, counts)
@@ -149,6 +160,6 @@ pTRAP = mark_histogram(average_counts(marks_data, "TRAP", "hamming_3D7"), "Hammi
 multiplot(pTEP, pUnnamed, pTh2R, pTh3R, pSERA2, pTRAP, cols=2, layout=matrix(c(1,2,3,4,5,6), nrow=3, byrow=TRUE))
 ```
 
-![plot of chunk unnamed-chunk-9](figure/unnamed-chunk-9-1.png) 
+![plot of chunk unnamed-chunk-10](figure/unnamed-chunk-10-1.png) 
 
 
