@@ -77,7 +77,8 @@ multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
 
 
 ```r
-marks_data = read.table("../adata/marks_data_c.tsv", header = TRUE)
+marks_data_c = read.table("../adata/marks_data_c.tsv", header = TRUE)
+marks_data_x = read.table("../adata/marks_data_x.tsv", header = TRUE)
 ```
 
 ### Randomly subsample to a single parasite per subject for a specific locus / mark / vaccine status combination
@@ -147,16 +148,18 @@ hamming_plot <- function(summary, xlabel) {
 }
 ```
 
-## Match vs mismatch
+## Clinical
+
+### Match vs mismatch
 
 
 ```r
-pTEP = match_plot(average_counts(marks_data, "TEP", "match_3D7"), "Match TEP")
-pUnnamed = match_plot(average_counts(marks_data, "Unnamed", "match_3D7"), "Match Unnamed")
-pTh2R = match_plot(average_counts(marks_data, "Th2R", "match_3D7"), "Match Th2R")
-pTh3R = match_plot(average_counts(marks_data, "Th3R", "match_3D7"), "Match Th3R")
-pSERA2 = match_plot(average_counts(marks_data, "SERA2", "match_3D7"), "Match SERA2")
-pTRAP = match_plot(average_counts(marks_data, "TRAP", "match_3D7"), "Match TRAP")
+pTEP = match_plot(average_counts(marks_data_c, "TEP", "match_3D7"), "Match TEP")
+pUnnamed = match_plot(average_counts(marks_data_c, "Unnamed", "match_3D7"), "Match Unnamed")
+pTh2R = match_plot(average_counts(marks_data_c, "Th2R", "match_3D7"), "Match Th2R")
+pTh3R = match_plot(average_counts(marks_data_c, "Th3R", "match_3D7"), "Match Th3R")
+pSERA2 = match_plot(average_counts(marks_data_c, "SERA2", "match_3D7"), "Match SERA2")
+pTRAP = match_plot(average_counts(marks_data_c, "TRAP", "match_3D7"), "Match TRAP")
 multiplot(pTEP, pUnnamed, pTh2R, pTh3R, pSERA2, pTRAP, cols=2, layout=matrix(c(1,2,3,4,5,6), nrow=3, byrow=TRUE))
 ```
 
@@ -166,18 +169,53 @@ multiplot(pTEP, pUnnamed, pTh2R, pTh3R, pSERA2, pTRAP, cols=2, layout=matrix(c(1
 
 ![plot of chunk unnamed-chunk-8](figure/unnamed-chunk-8-1.png) 
 
-## Hamming distance
+### Hamming distance
 
 
 ```r
-pTEP = hamming_plot(average_counts(marks_data, "TEP", "hamming_3D7"), "Hamming distance TEP")
-pUnnamed = hamming_plot(average_counts(marks_data, "Unnamed", "hamming_3D7"), "Hamming distance Unnamed")
-pTh2R = hamming_plot(average_counts(marks_data, "Th2R", "hamming_3D7"), "Hamming distance Th2R")
-pTh3R = hamming_plot(average_counts(marks_data, "Th3R", "hamming_3D7"), "Hamming distance Th3R")
-pSERA2 = hamming_plot(average_counts(marks_data, "SERA2", "hamming_3D7"), "Hamming distance SERA2")
-pTRAP = hamming_plot(average_counts(marks_data, "TRAP", "hamming_3D7"), "Hamming distance TRAP")
+pTEP = hamming_plot(average_counts(marks_data_c, "TEP", "hamming_3D7"), "Hamming distance TEP")
+pUnnamed = hamming_plot(average_counts(marks_data_c, "Unnamed", "hamming_3D7"), "Hamming distance Unnamed")
+pTh2R = hamming_plot(average_counts(marks_data_c, "Th2R", "hamming_3D7"), "Hamming distance Th2R")
+pTh3R = hamming_plot(average_counts(marks_data_c, "Th3R", "hamming_3D7"), "Hamming distance Th3R")
+pSERA2 = hamming_plot(average_counts(marks_data_c, "SERA2", "hamming_3D7"), "Hamming distance SERA2")
+pTRAP = hamming_plot(average_counts(marks_data_c, "TRAP", "hamming_3D7"), "Hamming distance TRAP")
 multiplot(pTEP, pUnnamed, pTh2R, pTh3R, pSERA2, pTRAP, cols=2, layout=matrix(c(1,2,3,4,5,6), nrow=3, byrow=TRUE))
 ```
 
 ![plot of chunk unnamed-chunk-9](figure/unnamed-chunk-9-1.png) 
 
+## Cross-sectional
+
+### Match vs mismatch
+
+
+```r
+pTEP = match_plot(average_counts(marks_data_x, "TEP", "match_3D7"), "Match TEP")
+pUnnamed = match_plot(average_counts(marks_data_x, "Unnamed", "match_3D7"), "Match Unnamed")
+pTh2R = match_plot(average_counts(marks_data_x, "Th2R", "match_3D7"), "Match Th2R")
+pTh3R = match_plot(average_counts(marks_data_x, "Th3R", "match_3D7"), "Match Th3R")
+pSERA2 = match_plot(average_counts(marks_data_x, "SERA2", "match_3D7"), "Match SERA2")
+pTRAP = match_plot(average_counts(marks_data_x, "TRAP", "match_3D7"), "Match TRAP")
+multiplot(pTEP, pUnnamed, pTh2R, pTh3R, pSERA2, pTRAP, cols=2, layout=matrix(c(1,2,3,4,5,6), nrow=3, byrow=TRUE))
+```
+
+```
+## Error: Aesthetics must either be length one, or the same length as the dataProblems:mark_value, mean, mean, status
+```
+
+![plot of chunk unnamed-chunk-10](figure/unnamed-chunk-10-1.png) 
+
+### Hamming distance
+
+
+```r
+pTEP = hamming_plot(average_counts(marks_data_x, "TEP", "hamming_3D7"), "Hamming distance TEP")
+pUnnamed = hamming_plot(average_counts(marks_data_x, "Unnamed", "hamming_3D7"), "Hamming distance Unnamed")
+pTh2R = hamming_plot(average_counts(marks_data_x, "Th2R", "hamming_3D7"), "Hamming distance Th2R")
+pTh3R = hamming_plot(average_counts(marks_data_x, "Th3R", "hamming_3D7"), "Hamming distance Th3R")
+pSERA2 = hamming_plot(average_counts(marks_data_x, "SERA2", "hamming_3D7"), "Hamming distance SERA2")
+pTRAP = hamming_plot(average_counts(marks_data_x, "TRAP", "hamming_3D7"), "Hamming distance TRAP")
+multiplot(pTEP, pUnnamed, pTh2R, pTh3R, pSERA2, pTRAP, cols=2, layout=matrix(c(1,2,3,4,5,6), nrow=3, byrow=TRUE))
+```
+
+![plot of chunk unnamed-chunk-11](figure/unnamed-chunk-11-1.png) 
