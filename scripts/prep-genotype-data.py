@@ -1,6 +1,6 @@
 import sys, csv, random
 
-seq_loci = ["CST3", "SERA2", "TEP", "Th2R", "Th3R", "TRAP", "Unnamed"]
+seq_loci = ["CST3", "SERA2", "TEP", "Th2R", "Th3R", "TRAP", "Unnamed", "LD"]
 count_loci = ["BEP"]
 
 def collect_matched_sample(clinical_or_cross):
