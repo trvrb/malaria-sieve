@@ -1,5 +1,44 @@
 # Analysis of sieve effects in the RTS,S malaria vaccine trial
 
+## Loci
+
+### CSP regions
+
+1. TEP
+2. CST3
+3. Th2R
+4. Th3R
+5. Unnamed
+6. LD
+
+### CSP repeats
+
+7. BEP
+
+### Control regions
+
+8. SERA2
+9. TRAP
+
+## Study sites
+
+### Major sites
+
+1. Agogo, Gabon, West Africa (41092)
+2. Kintampo, Ghana, West Africa (41089)
+3. Kombewa, Kenya, East Africa (41108)
+4. Nanoro, Burkina Faso, West Africa (53530)
+5. Siaya, Kenya, East Africa (53598)
+
+### Minor sites
+
+6. Bagamoyo, Tanzania, East Africa (41106)
+7. Kilifi, Kenya, East Africa (41104)
+8. Korogwe, Tanzania, East Africa (41107)
+9. Lambarene, Gabon, West Africa (41087)
+10. Lilongwe, Malawi, East Africa (53597)
+11. Manhica, Mozambique, East Africa (41105)
+
 ## Data prep
 
 The haplotype data files from the Broad are:
