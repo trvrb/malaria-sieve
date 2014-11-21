@@ -41,6 +41,8 @@
 
 ## Data prep
 
+### Marks data
+
 The haplotype data files from the Broad are:
 
 ```
@@ -74,6 +76,15 @@ with
 ```
 python scripts/prep-genotype-data.py C > adata/marks_data_c.tsv
 python scripts/prep-genotype-data.py X > adata/marks_data_x.tsv
+```
+
+### Site-specific marks data
+
+Amended sequence data files are generated with:
+
+```
+python scripts/append-site-specific-match.py TEP > qdata/sequences/TEP_sites.tsv
+python scripts/append-site-specific-match.py SERA2 > qdata/sequences/SERA2_sites.tsv
 ```
 
 ## Descriptive statistics of genotype data
