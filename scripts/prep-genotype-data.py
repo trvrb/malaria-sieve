@@ -14,8 +14,28 @@ def collect_matched_sample(clinical_or_cross):
 			samples.append(sample)
 	return samples
 	
+def collect_study_site():
+	"""Return a dict that matches samples to study site"""
+	study_site = {}
+	reader = csv.DictReader(open("adata/RTSSclinicalData.csv"))								# list of dicts
+	for line in reader:
+		sample = line['id']
+		site = line['site']
+		study_site[sample] = site
+	return study_site	
+	
+def collect_age_cohort():
+	"""Return a dict that matches samples to age cohort"""
+	age_cohort = {}
+	reader = csv.DictReader(open("adata/RTSSclinicalData.csv"))								# list of dicts
+	for line in reader:
+		sample = line['id']
+		cohort = line['ageCateg'].replace("[", "").replace("]", "")
+		age_cohort[sample] = cohort
+	return age_cohort		
+	
 def collect_vaccine_status():
-	"""Return a list of samples matching to vaccine status"""
+	"""Return a dict that matches samples to vaccine status"""
 	vaccine_status = {}
 	reader = csv.DictReader(open("adata/RTSSclinicalData.csv"))								# list of dicts
 	for line in reader:
@@ -140,8 +160,8 @@ def repeat_count(subjects, seq_data):
 		marks[(subject, locus)] = mark
 	return marks	
 		
-def print_marks(subjects, seq_data, mark_names, mark_data, vaccine_status):
-	line = ["subject", "sample", "sample_count", "locus", "mark_name", "mark_value", "vaccine_status"]
+def print_marks(subjects, seq_data, mark_names, mark_data, study_site, age_cohort, vaccine_status):
+	line = ["subject", "sample", "sample_count", "locus", "mark_name", "mark_value", "study_site", "age_cohort", "vaccine_status"]
 	print "\t".join(line)
 	for subject in subjects:
 		subject_id = subject.split("\t")[0]
@@ -150,22 +170,22 @@ def print_marks(subjects, seq_data, mark_names, mark_data, vaccine_status):
 				data = mark_data[mark_name]
 				marks = data[(subject, locus)]
 				for index, mark in enumerate(marks):
-					line = [subject, str(index+1), locus, mark_name, str(mark), str(vaccine_status[subject_id])]
+					line = [subject, str(index+1), locus, mark_name, str(mark), str(study_site[subject_id]), str(age_cohort[subject_id]), str(vaccine_status[subject_id])]
 					print "\t".join(line)
 		mark_name = 'multiplicity'
 		data = mark_data[mark_name]
 		mark = str(data[(subject, "NA")])			
-		line = [subject, "1", "NA", mark_name, mark,  str(vaccine_status[subject_id])]
+		line = [subject, "1", "NA", mark_name, mark, str(study_site[subject_id]), str(age_cohort[subject_id]), str(vaccine_status[subject_id])]
 		print "\t".join(line)		
 		mark_name = 'repeats_identical_3D7'
 		data = mark_data[mark_name]
 		mark = str(data[(subject, "BEP")])
-		line = [subject, "1", "BEP", 'match_3D7', mark,  str(vaccine_status[subject_id])]
+		line = [subject, "1", "BEP", 'match_3D7', mark, str(study_site[subject_id]), str(age_cohort[subject_id]), str(vaccine_status[subject_id])]
 		print "\t".join(line)		
 		mark_name = 'repeat_count'
 		data = mark_data[mark_name]
 		mark = str(data[(subject, "BEP")])
-		line = [subject, "1", "BEP", mark_name, mark,  str(vaccine_status[subject_id])]
+		line = [subject, "1", "BEP", mark_name, mark, str(study_site[subject_id]), str(age_cohort[subject_id]), str(vaccine_status[subject_id])]
 		print "\t".join(line)						
 			
 
@@ -175,6 +195,8 @@ def main(argv):
 	if len(argv) > 0:
 		clinical_or_cross = argv[0]
 	matched_samples = collect_matched_sample(clinical_or_cross)
+	study_site = collect_study_site()	
+	age_cohort = collect_age_cohort()	
 	vaccine_status = collect_vaccine_status()	
 	subjects = []
 	seq_data = {}	
@@ -187,7 +209,7 @@ def main(argv):
 	mark_data['hamming_3D7'] = hamming_3D7(subjects, seq_data)	
 	mark_data['repeats_identical_3D7'] = repeats_identical_3D7(subjects, seq_data)
 	mark_data['repeat_count'] = repeat_count(subjects, seq_data)					
-	print_marks(subjects, seq_data, mark_names, mark_data, vaccine_status)
+	print_marks(subjects, seq_data, mark_names, mark_data, study_site, age_cohort, vaccine_status)
 
 if __name__ == "__main__":
     main(sys.argv[1:])
