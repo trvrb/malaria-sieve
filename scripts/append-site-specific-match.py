@@ -24,7 +24,7 @@ def print_match(data, site_count):
 	print "\t".join(header + extra_header)
 	for line in data:
 		out1 = [line[h] for h in header]
-		out2 = [str(line["pep_3D7_hamming_" + str(index)]) for index in range(1, site_count)]
+		out2 = [str(line["pep_3D7_hamming_" + str(index)]) for index in range(1, site_count+1)]
 		print "\t".join(out1 + out2)
 			
 def main(argv):
