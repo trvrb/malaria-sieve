@@ -193,7 +193,7 @@ def print_marks(subjects, seq_data, mark_names, mark_data, study_site, age_cohor
 					
 		# site-specific match
 		locus = "TEP"
-		for index in range(1,95):
+		for index in range(294,388):
 			mark_name = "match_3D7_" + str(index)
 			data = mark_data[mark_name]
 			marks = data[(subject, locus)]
@@ -202,14 +202,14 @@ def print_marks(subjects, seq_data, mark_names, mark_data, study_site, age_cohor
 				print "\t".join(line)	
 				
 		# SERA site-specific match
-#		locus = "SERA2"
-#		for index in range(1,85):
-#			mark_name = "match_3D7_" + str(index)
-#			data = mark_data[mark_name]
-#			marks = data[(subject, locus)]
-#			for index, mark in enumerate(marks):
-#				line = [subject, str(index+1), locus, mark_name, str(mark), str(study_site[subject_id]), str(age_cohort[subject_id]), str(vaccine_status[subject_id])]
-#				print "\t".join(line)						
+		locus = "SERA2"
+		for index in range(36,120):
+			mark_name = "match_3D7_" + str(index)
+			data = mark_data[mark_name]
+			marks = data[(subject, locus)]
+			for index, mark in enumerate(marks):
+				line = [subject, str(index+1), locus, mark_name, str(mark), str(study_site[subject_id]), str(age_cohort[subject_id]), str(vaccine_status[subject_id])]
+				print "\t".join(line)						
 								
 		# multiplicity
 		mark_name = 'multiplicity'
@@ -252,7 +252,9 @@ def main(argv):
 	mark_data['repeats_identical_3D7'] = repeats_identical_3D7(subjects, seq_data)
 	mark_data['repeat_count'] = repeat_count(subjects, seq_data)
 	for index in range(1,95):
-		mark_data["match_3D7_" + str(index)] = identical_3D7_site(subjects, seq_data, "TEP", index)
+		mark_data["match_3D7_" + str(index+293)] = identical_3D7_site(subjects, seq_data, "TEP", index)
+	for index in range(1,85):
+		mark_data["match_3D7_" + str(index+35)] = identical_3D7_site(subjects, seq_data, "SERA2", index)		
 	print_marks(subjects, seq_data, mark_names, mark_data, study_site, age_cohort, vaccine_status)
 
 if __name__ == "__main__":
