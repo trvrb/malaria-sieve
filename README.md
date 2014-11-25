@@ -1,5 +1,11 @@
 # Analysis of sieve effects in the RTS,S malaria vaccine trial
 
+## Endpoints
+
+1. Clinical malaria at 14 months
+2. Severe clinical malaria at 14 months
+3. Parasite infection at 20 months
+
 ## Loci
 
 ### CSP regions
