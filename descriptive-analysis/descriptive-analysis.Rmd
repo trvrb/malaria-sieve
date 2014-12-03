@@ -5,7 +5,7 @@
 Set global variables and load packages and functions.
 
 ```{r setup, include=FALSE}
-replicate_count = 3
+replicate_count = 50
 
 require(ggplot2)
 require(plyr)
