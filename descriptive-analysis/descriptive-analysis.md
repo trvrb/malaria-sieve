@@ -26,11 +26,6 @@ Make plotting functions.
 
 ### Match vs mismatch
 
-
-```
-## Error: Aesthetics must either be length one, or the same length as the dataProblems:status, mean, mean, status
-```
-
 ![plot of chunk match-c](figures/match-c-1.png) 
 
 ### Hamming distance
@@ -40,11 +35,6 @@ Make plotting functions.
 ## Cross-sectional
 
 ### Match vs mismatch
-
-
-```
-## Error: Aesthetics must either be length one, or the same length as the dataProblems:status, mean, mean, status
-```
 
 ![plot of chunk match-x](figures/match-x-1.png) 
 

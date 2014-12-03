@@ -1,0 +1,951 @@
+library(knitr)
+require(ggplot2)#
+require(plyr)
+blue = rgb(0.330, 0.484, 0.828)#
+light_blue = rgb(0.531, 0.639, 0.880)#
+dark_blue = rgb(0.198, 0.290, 0.500)#
+yellow = rgb(0.829, 0.680, 0.306)#
+light_yellow = rgb(0.880, 0.776, 0.514)#
+dark_yellow = rgb(0.497, 0.408, 0.183)
+# Multiple plot function#
+##
+# ggplot objects can be passed in ..., or to plotlist (as a list of ggplot objects)#
+# - cols:   Number of columns in layout#
+# - layout: A matrix specifying the layout. If present, 'cols' is ignored.#
+##
+# If the layout is something like matrix(c(1,2,3,3), nrow=2, byrow=TRUE),#
+# then plot 1 will go in the upper left, 2 will go in the upper right, and#
+# 3 will go all the way across the bottom.#
+##
+multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {#
+  require(grid)#
+#
+  # Make a list from the ... arguments and plotlist#
+  plots <- c(list(...), plotlist)#
+#
+  numPlots = length(plots)#
+#
+  # If layout is NULL, then use 'cols' to determine layout#
+  if (is.null(layout)) {#
+    # Make the panel#
+    # ncol: Number of columns of plots#
+    # nrow: Number of rows needed, calculated from # of cols#
+    layout <- matrix(seq(1, cols * ceiling(numPlots/cols)),#
+                    ncol = cols, nrow = ceiling(numPlots/cols))#
+  }#
+#
+ if (numPlots==1) {#
+    print(plots[[1]])#
+#
+  } else {#
+    # Set up the page#
+    grid.newpage()#
+    pushViewport(viewport(layout = grid.layout(nrow(layout), ncol(layout))))#
+#
+    # Make each plot, in the correct location#
+    for (i in 1:numPlots) {#
+      # Get the i,j matrix positions of the regions that contain this subplot#
+      matchidx <- as.data.frame(which(layout == i, arr.ind = TRUE))#
+#
+      print(plots[[i]], vp = viewport(layout.pos.row = matchidx$row,#
+                                      layout.pos.col = matchidx$col))#
+    }#
+  }#
+}
+marks_data = read.table("../adata/marks_data_c.tsv", header = TRUE)
+marks_data = read.table("../adata/marks_data_c.tsv", header = TRUE)
+marks_data = read.table("../adata/marks_data_c.tsv", header = TRUE)
+marks_data
+getGtSample <- function(marks_data, input_locus, input_mark, seed=NULL) {#
+	marks_data <- subset(marks_data, locus == input_locus & mark_name == input_mark)#
+	if (!is.null(seed)){ set.seed(seed) }#
+	marks_data <- marks_data[sample(NROW(marks_data)),]#
+	idx <- which(!duplicated(marks_data$subject))#
+	return(marks_data[idx,])#
+}
+average_counts <- function(marks_data, input_locus, input_mark) {#
+	tallies <- data.frame(mark_value= numeric(0), y= numeric(0), replicate = numeric(0))#
+	for (i in 1:100) {#
+		subsetted = getGtSample(marks_data, input_locus, input_mark)#
+		counts = ddply(subsetted, "mark_value", summarise, y = length(mark_value))#
+		counts$replicate <- i#
+		tallies <- rbind(tallies, counts)#
+	}#
+	summary = ddply(tallies,~mark_value,summarise,mean=mean(y),sd=sd(y))#
+	return(summary)#
+}
+mark_histogram <- function(summary, xlabel) {#
+	summary2 <- summary#
+	summary2$mark_value <- factor(summary2$mark_value)#
+	ggplot(summary2, aes(x=mark_value, y=mean)) +#
+     geom_bar(position=position_dodge(), stat="identity", colour = dark_blue, fill = light_blue) +#
+     geom_errorbar(aes(ymin=mean-sd, ymax=mean+sd), width=.2, position=position_dodge(.9)) +#
+     xlab(xlabel) +#
+     ylab("Count") +#
+     theme_bw()#
+}
+pTEP = mark_histogram(average_counts(marks_data, "TEP", "hamming_3D7"), "Hamming distance TEP")
+pTEP
+pUnnamed = mark_histogram(average_counts(marks_data, "Unnamed", "hamming_3D7"), "Hamming distance Unnamed")#
+pTh2R = mark_histogram(average_counts(marks_data, "Th2R", "hamming_3D7"), "Hamming distance Th2R")#
+pTh3R = mark_histogram(average_counts(marks_data, "Th3R", "hamming_3D7"), "Hamming distance Th3R")#
+pSERA2 = mark_histogram(average_counts(marks_data, "SERA2", "hamming_3D7"), "Hamming distance SERA2")#
+pTRAP = mark_histogram(average_counts(marks_data, "TRAP", "hamming_3D7"), "Hamming distance TRAP")#
+multiplot(pTEP, pUnnamed, pTh2R, pTh3R, pSERA2, pTRAP, cols=2, layout=matrix(c(1,2,3,4,5,6), nrow=3, byrow=TRUE))
+require(ggplot2)#
+require(plyr)
+require(ggplot2)#
+require(plyr)#
+require(grid)
+blue = rgb(0.330, 0.484, 0.828)#
+light_blue = rgb(0.531, 0.639, 0.880)#
+dark_blue = rgb(0.198, 0.290, 0.500)#
+yellow = rgb(0.829, 0.680, 0.306)#
+light_yellow = rgb(0.880, 0.776, 0.514)#
+dark_yellow = rgb(0.497, 0.408, 0.183)
+# Multiple plot function#
+##
+# ggplot objects can be passed in ..., or to plotlist (as a list of ggplot objects)#
+# - cols:   Number of columns in layout#
+# - layout: A matrix specifying the layout. If present, 'cols' is ignored.#
+##
+# If the layout is something like matrix(c(1,2,3,3), nrow=2, byrow=TRUE),#
+# then plot 1 will go in the upper left, 2 will go in the upper right, and#
+# 3 will go all the way across the bottom.#
+##
+multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {#
+  require(grid)#
+#
+  # Make a list from the ... arguments and plotlist#
+  plots <- c(list(...), plotlist)#
+#
+  numPlots = length(plots)#
+#
+  # If layout is NULL, then use 'cols' to determine layout#
+  if (is.null(layout)) {#
+    # Make the panel#
+    # ncol: Number of columns of plots#
+    # nrow: Number of rows needed, calculated from # of cols#
+    layout <- matrix(seq(1, cols * ceiling(numPlots/cols)),#
+                    ncol = cols, nrow = ceiling(numPlots/cols))#
+  }#
+#
+ if (numPlots==1) {#
+    print(plots[[1]])#
+#
+  } else {#
+    # Set up the page#
+    grid.newpage()#
+    pushViewport(viewport(layout = grid.layout(nrow(layout), ncol(layout))))#
+#
+    # Make each plot, in the correct location#
+    for (i in 1:numPlots) {#
+      # Get the i,j matrix positions of the regions that contain this subplot#
+      matchidx <- as.data.frame(which(layout == i, arr.ind = TRUE))#
+#
+      print(plots[[i]], vp = viewport(layout.pos.row = matchidx$row,#
+                                      layout.pos.col = matchidx$col))#
+    }#
+  }#
+}
+marks_data = read.table("../adata/marks_data_c.tsv", header = TRUE)
+getGtSample <- function(marks_data, input_locus, input_mark, input_status, seed=NULL) {#
+	marks_data <- subset(marks_data, locus == input_locus & mark_name == input_mark & vaccine_status == input_status)#
+	if (!is.null(seed)){ set.seed(seed) }#
+	marks_data <- marks_data[sample(NROW(marks_data)),]#
+	idx <- which(!duplicated(marks_data$subject))#
+	return(marks_data[idx,])#
+}
+average_counts <- function(marks_data, input_locus, input_mark, input_status) {#
+	tallies <- data.frame(mark_value= numeric(0), y= numeric(0), replicate = numeric(0))#
+	for (i in 1:100) {#
+		subsetted = getGtSample(marks_data, input_locus, input_mark, input_status)#
+		counts = ddply(subsetted, "mark_value", summarise, y = length(mark_value))#
+		counts$replicate <- i#
+		tallies <- rbind(tallies, counts)#
+	}#
+	summary = ddply(tallies,~mark_value,summarise,mean=mean(y),sd=sd(y))#
+	return(summary)#
+}
+average_counts(marks_data, "TEP", "hamming_3D7", 1)
+average_counts(marks_data, "TEP", "hamming_3D7", 0)
+average_counts <- function(marks_data, input_locus, input_mark, input_status) {#
+	tallies <- data.frame(mark_value= numeric(0), y= numeric(0), replicate = numeric(0))#
+	for (i in 1:100) {#
+		subsetted = getGtSample(marks_data, input_locus, input_mark, input_status)#
+		counts = ddply(subsetted, "mark_value", summarise, y = length(mark_value))#
+		counts$replicate <- i#
+		tallies <- rbind(tallies, counts)#
+	}#
+	summary = ddply(tallies,~mark_value,summarise,mean=mean(y),sd=sd(y))#
+	total = sum(summary$mean)#
+	print(total)#
+	return(summary)#
+}
+average_counts(marks_data, "TEP", "hamming_3D7", 0)
+average_counts(marks_data, "TEP", "hamming_3D7", 0)
+average_counts <- function(marks_data, input_locus, input_mark, input_status) {#
+	tallies <- data.frame(mark_value= numeric(0), y= numeric(0), replicate = numeric(0))#
+	for (i in 1:100) {#
+		subsetted = getGtSample(marks_data, input_locus, input_mark, input_status)#
+		counts = ddply(subsetted, "mark_value", summarise, y = length(mark_value))#
+		counts$replicate <- i#
+		tallies <- rbind(tallies, counts)#
+	}#
+	summary = ddply(tallies,~mark_value,summarise,mean=mean(y),sd=sd(y))#
+	total = sum(summary$mean)#
+	mean_freq = summary$mean/total#
+	print(mean_freq)#
+	return(summary)#
+}
+average_counts(marks_data, "TEP", "hamming_3D7", 0)
+average_counts <- function(marks_data, input_locus, input_mark, input_status) {#
+	tallies <- data.frame(mark_value= numeric(0), y= numeric(0), replicate = numeric(0))#
+	for (i in 1:100) {#
+		subsetted = getGtSample(marks_data, input_locus, input_mark, input_status)#
+		counts = ddply(subsetted, "mark_value", summarise, y = length(mark_value))#
+		counts$replicate <- i#
+		tallies <- rbind(tallies, counts)#
+	}#
+	summary = ddply(tallies,~mark_value,summarise,mean=mean(y),sd=sd(y))#
+	total = sum(summary$mean)#
+	summary$mean = summary$mean/total#
+	return(summary)#
+}
+average_counts(marks_data, "TEP", "hamming_3D7", 0)
+average_counts <- function(marks_data, input_locus, input_mark, input_status) {#
+	tallies <- data.frame(mark_value= numeric(0), y= numeric(0), replicate = numeric(0))#
+	for (i in 1:100) {#
+		subsetted = getGtSample(marks_data, input_locus, input_mark, input_status)#
+		counts = ddply(subsetted, "mark_value", summarise, y = length(mark_value))#
+		counts$replicate <- i#
+		tallies <- rbind(tallies, counts)#
+	}#
+	summary = ddply(tallies,~mark_value,summarise,mean=mean(y),sd=sd(y))#
+	total = sum(summary$mean)#
+	summary$mean = summary$mean/total#
+	summary$sd = summary$sd/total	#
+	return(summary)#
+}
+average_counts(marks_data, "TEP", "hamming_3D7", 0)
+average_counts(marks_data, "TEP", "hamming_3D7", 1)
+mark_histogram <- function(summary, xlabel) {#
+	summary$mark_value <- factor(summary$mark_value)#
+	ggplot(summary, aes(x=mark_value, y=mean)) +#
+     geom_bar(position=position_dodge(), stat="identity", colour = dark_blue, fill = light_blue) +#
+     geom_errorbar(aes(ymin=mean-sd, ymax=mean+sd), width=.2, position=position_dodge(.9)) +#
+     xlab(xlabel) +#
+     ylab("Count") +#
+     theme_bw()#
+}
+pTEP = mark_histogram(average_counts(marks_data, "TEP", "hamming_3D7"), "Hamming distance TEP")
+pTEP = mark_histogram(average_counts(marks_data, "TEP", "hamming_3D7", 1), "Hamming distance TEP")
+pTEP
+mark_histogram(average_counts(marks_data, "SERA2", "hamming_3D7", 1), "Hamming distance SERA2")
+mark_histogram(average_counts(marks_data, "TRAP", "hamming_3D7", 1), "Hamming distance TRAP")
+mark_histogram(average_counts(marks_data, "TRAP", "hamming_3D7", 1), "Hamming distance TRAP")
+average_counts(marks_data, "TEP", "hamming_3D7")
+average_counts(marks_data, "TEP", "hamming_3D7", 1)
+summary <- average_counts(marks_data, "TEP", "hamming_3D7", 1)
+summary$status <- 1
+summary
+average_counts <- function(marks_data, input_locus, input_mark) {#
+	summary_placebo <- average_counts(marks_data, input_locus, input_mark, 0)#
+	summary_vaccine <- average_counts(marks_data, input_locus, input_mark, 1)#
+	summary_placebo$status <- 0#
+	summary_vaccine$status <- 1#
+	summary <- merge(summary_placebo, summary_vaccine)#
+	return(summary)#
+}
+average_counts(marks_data, "TEP", "hamming_3D7")
+average_counts <- function(marks_data, input_locus, input_mark) {#
+	summary_placebo <- average_counts_status(marks_data, input_locus, input_mark, 0)#
+	summary_vaccine <- average_counts_status(marks_data, input_locus, input_mark, 1)#
+	summary_placebo$status <- 0#
+	summary_vaccine$status <- 1#
+	summary <- merge(summary_placebo, summary_vaccine)#
+	return(summary)#
+}
+average_counts(marks_data, "TEP", "hamming_3D7")
+average_counts_status <- function(marks_data, input_locus, input_mark, input_status) {#
+	tallies <- data.frame(mark_value= numeric(0), y= numeric(0), replicate = numeric(0))#
+	for (i in 1:100) {#
+		subsetted = getGtSample(marks_data, input_locus, input_mark, input_status)#
+		counts = ddply(subsetted, "mark_value", summarise, y = length(mark_value))#
+		counts$replicate <- i#
+		tallies <- rbind(tallies, counts)#
+	}#
+	summary = ddply(tallies,~mark_value,summarise,mean=mean(y),sd=sd(y))#
+	total = sum(summary$mean)#
+	summary$mean = summary$mean/total#
+	summary$sd = summary$sd/total	#
+	return(summary)#
+}
+average_counts(marks_data, "TEP", "hamming_3D7")
+average_counts <- function(marks_data, input_locus, input_mark) {#
+	summary_placebo <- average_counts_status(marks_data, input_locus, input_mark, 0)#
+	summary_vaccine <- average_counts_status(marks_data, input_locus, input_mark, 1)#
+	summary_placebo$status <- 0#
+	summary_vaccine$status <- 1#
+	summary <- rbind(summary_placebo, summary_vaccine)#
+	return(summary)#
+}
+average_counts(marks_data, "TEP", "hamming_3D7")
+mark_histogram <- function(summary, xlabel) {#
+	summary$mark_value <- factor(summary$mark_value)#
+	ggplot(summary_placebo, aes(x=mark_value, y=mean, fill=status)) +#
+     geom_bar(position=position_dodge(), stat="identity", colour = dark_blue, fill = light_blue) +#
+     geom_bar(position=position_dodge(), stat="identity", colour = dark_yellow, fill = light_yellow) +#
+     geom_errorbar(aes(ymin=mean-sd, ymax=mean+sd), width=.2, position=position_dodge(.9)) +#
+     xlab(xlabel) +#
+     ylab("Count") +#
+     theme_bw()#
+}
+mark_histogram(average_counts(marks_data, "TEP", "hamming_3D7"), "Hamming distance TEP")
+mark_histogram <- function(summary, xlabel) {#
+	summary$mark_value <- factor(summary$mark_value)#
+	ggplot(summary, aes(x=mark_value, y=mean, fill=status)) +#
+     geom_bar(position=position_dodge(), stat="identity", colour = dark_blue, fill = light_blue) +#
+     geom_errorbar(aes(ymin=mean-sd, ymax=mean+sd), width=.2, position=position_dodge(.9)) +#
+     xlab(xlabel) +#
+     ylab("Count") +#
+     theme_bw()#
+}
+mark_histogram(average_counts(marks_data, "TEP", "hamming_3D7"), "Hamming distance TEP")
+summary <- average_counts(marks_data, "TEP", "hamming_3D7")
+mark_histogram <- function(summary, xlabel) {#
+	summary$mark_value <- factor(summary$mark_value)#
+	ggplot(summary, aes(x=mark_value, y=mean, fill=status)) +#
+     geom_bar(position="dodge", stat="identity", colour = dark_blue, fill = light_blue) +#
+     geom_errorbar(aes(ymin=mean-sd, ymax=mean+sd), width=.2, position=position_dodge(.9)) +#
+     xlab(xlabel) +#
+     ylab("Count") +#
+     theme_bw()#
+}
+mark_histogram(summary, "Hamming distance TEP")
+mark_histogram <- function(summary, xlabel) {#
+	summary$mark_value <- factor(summary$mark_value)#
+	ggplot(summary, aes(x=mark_value, y=mean, fill=status)) +#
+     geom_bar(position="dodge") +#
+     geom_errorbar(aes(ymin=mean-sd, ymax=mean+sd), width=.2, position=position_dodge(.9)) +#
+     xlab(xlabel) +#
+     ylab("Count") +#
+     theme_bw()#
+}
+mark_histogram(summary, "Hamming distance TEP")
+mark_histogram <- function(summary, xlabel) {#
+	summary$mark_value <- factor(summary$mark_value)#
+	ggplot(summary, aes(x=mark_value, y=mean, fill=status)) +#
+     geom_bar(position=position_dodge(width=0.5), stat="identity", colour = dark_blue, fill = light_blue) +#
+     geom_errorbar(aes(ymin=mean-sd, ymax=mean+sd), width=.2, position=position_dodge(.9)) +#
+     xlab(xlabel) +#
+     ylab("Count") +#
+     theme_bw()#
+}
+mark_histogram(summary, "Hamming distance TEP")
+mark_histogram <- function(summary, xlabel) {#
+	summary$mark_value <- factor(summary$mark_value)#
+	ggplot(summary, aes(x=mark_value, y=mean, fill=status)) +#
+     geom_bar(stat="identity") +#
+     xlab(xlabel) +#
+     ylab("Count") +#
+     theme_bw()#
+}
+mark_histogram(summary, "Hamming distance TEP")
+mark_histogram <- function(summary, xlabel) {#
+	summary$mark_value <- factor(summary$mark_value)#
+	ggplot(summary, aes(x=mark_value, y=mean, fill=status)) +#
+     geom_bar(position="dodge", stat="identity") +#
+     xlab(xlabel) +#
+     ylab("Count") +#
+     theme_bw()#
+}
+mark_histogram(summary, "Hamming distance TEP")
+mark_histogram <- function(summary, xlabel) {#
+	summary$mark_value <- factor(summary$mark_value)#
+	ggplot(summary, aes(x=mark_value, y=mean, fill=status)) +#
+     geom_bar(position=position_dodge(), stat="identity") +#
+     xlab(xlabel) +#
+     ylab("Count") +#
+     theme_bw()#
+}
+mark_histogram(summary, "Hamming distance TEP")
+mark_histogram <- function(summary, xlabel) {#
+	summary$mark_value <- factor(summary$mark_value)#
+	summary$status <- factor(summary$status)#
+	ggplot(summary, aes(x=mark_value, y=mean, fill=status)) +#
+     geom_bar(position=position_dodge(), stat="identity") +#
+     xlab(xlabel) +#
+     ylab("Count") +#
+     theme_bw()#
+}
+mark_histogram(summary, "Hamming distance TEP")
+mark_histogram <- function(summary, xlabel) {#
+	summary$mark_value <- factor(summary$mark_value)#
+	summary$status <- factor(summary$status)#
+	ggplot(summary, aes(x=mark_value, y=mean, fill=status)) +#
+     geom_bar(position=position_dodge(), stat="identity") +#
+     xlab(xlabel) +#
+     ylab("Count") +#
+    scale_fill_manual(values=c(light_blue, light_yellow)) +#
+     theme_bw()#
+}
+mark_histogram(summary, "Hamming distance TEP")
+mark_histogram <- function(summary, xlabel) {#
+	summary$mark_value <- factor(summary$mark_value)#
+	summary$status <- factor(summary$status)#
+	ggplot(summary, aes(x=mark_value, y=mean, fill=status)) +#
+      geom_bar(position=position_dodge(), stat="identity") +#
+      xlab(xlabel) +#
+      ylab("Count") +#
+	  scale_fill_manual(values=c(light_blue, light_yellow)) +#
+	  scale_colour_manual(values=c(dark_blue, dark_yellow)) +#
+      theme_bw()#
+}
+mark_histogram(summary, "Hamming distance TEP")
+mark_histogram <- function(summary, xlabel) {#
+	summary$mark_value <- factor(summary$mark_value)#
+	summary$status <- factor(summary$status)#
+	ggplot(summary, aes(x=mark_value, y=mean, fill=status)) +#
+      geom_bar(position=position_dodge(), stat="identity") +#
+      xlab(xlabel) +#
+      ylab("Count") +#
+	  scale_fill_manual(values=c(light_blue, light_yellow)) +#
+	  scale_color_manual(values=c(dark_blue, dark_yellow)) +#
+      theme_bw()#
+}
+mark_histogram(summary, "Hamming distance TEP")
+mark_histogram <- function(summary, xlabel) {#
+	summary$mark_value <- factor(summary$mark_value)#
+	summary$status <- factor(summary$status)#
+	ggplot(summary, aes(x=mark_value, y=mean, fill=status)) +#
+      geom_bar(position=position_dodge(), stat="identity") +#
+      xlab(xlabel) +#
+      ylab("Count") +#
+	  scale_fill_manual(values=c(light_blue, light_yellow)) +#
+	  scale_linetype_manual(values=c(dark_blue, dark_yellow)) +#
+      theme_bw()#
+}
+mark_histogram(summary, "Hamming distance TEP")
+mark_histogram <- function(summary, xlabel) {#
+	summary$mark_value <- factor(summary$mark_value)#
+	summary$status <- factor(summary$status)#
+	ggplot(summary, aes(x=mark_value, y=mean, fill=status, color=status)) +#
+      geom_bar(position=position_dodge(), stat="identity") +#
+      xlab(xlabel) +#
+      ylab("Count") +#
+	  scale_fill_manual(values=c(light_blue, light_yellow)) +#
+	  scale_color_manual(values=c(dark_blue, dark_yellow)) +#
+      theme_bw()#
+}
+mark_histogram(summary, "Hamming distance TEP")
+mark_histogram <- function(summary, xlabel) {#
+	summary$mark_value <- factor(summary$mark_value)#
+	summary$status <- factor(summary$status)#
+	ggplot(summary, aes(x=mark_value, y=mean, fill=status), color="black") +#
+      geom_bar(position=position_dodge(), stat="identity") +#
+      xlab(xlabel) +#
+      ylab("Count") +#
+	  scale_fill_manual(values=c("#56B4E9", "E69F00")) +#
+      theme_bw()#
+}
+mark_histogram(summary, "Hamming distance TEP")
+mark_histogram <- function(summary, xlabel) {#
+	summary$mark_value <- factor(summary$mark_value)#
+	summary$status <- factor(summary$status)#
+	ggplot(summary, aes(x=mark_value, y=mean, fill=status), color="black") +#
+      geom_bar(position=position_dodge(), stat="identity") +#
+      xlab(xlabel) +#
+      ylab("Count") +#
+	  scale_fill_manual(values=c("#56B4E9", "#E69F00")) +#
+      theme_bw()#
+}
+mark_histogram(summary, "Hamming distance TEP")
+mark_histogram <- function(summary, xlabel) {#
+	summary$mark_value <- factor(summary$mark_value)#
+	summary$status <- factor(summary$status)#
+	ggplot(summary, aes(x=mark_value, y=mean, fill=status, color=status)) +#
+      geom_bar(position=position_dodge(), stat="identity") +#
+      xlab(xlabel) +#
+      ylab("Count") +#
+	  scale_fill_manual(values=c(light_blue, light_yellow)) +#
+	  scale_color_manual(values=c(dark_blue, dark_yellow)) +#
+      theme_bw()#
+}
+mark_histogram(summary, "Hamming distance TEP")
+mark_histogram <- function(summary, xlabel) {#
+	summary$mark_value <- factor(summary$mark_value)#
+	summary$status <- factor(summary$status)#
+	ggplot(summary, aes(x=mark_value, y=mean, fill=status, color=status)) +#
+      geom_bar(position=position_dodge(), stat="identity") +#
+      xlab(xlabel) +#
+      ylab("Count") +#
+	  scale_fill_manual(values=c(light_blue, light_yellow) + labels=c("Treatment 1", "Treatment 2")) +#
+	  scale_color_manual(values=c(dark_blue, dark_yellow)) +#
+      theme_bw()#
+}
+mark_histogram <- function(summary, xlabel) {#
+	summary$mark_value <- factor(summary$mark_value)#
+	summary$status <- factor(summary$status)#
+	ggplot(summary, aes(x=mark_value, y=mean, fill=status, color=status)) +#
+      geom_bar(position=position_dodge(), stat="identity") +#
+      xlab(xlabel) +#
+      ylab("Count") +#
+	  scale_fill_manual(values=c(light_blue, light_yellow) + labels=c("Treatment 1", "Treatment 2")) +#
+	  scale_color_manual(values=c(dark_blue, dark_yellow)) +#
+      theme_bw()#
+}
+mark_histogram <- function(summary, xlabel) {#
+	summary$mark_value <- factor(summary$mark_value)#
+	summary$status <- factor(summary$status)#
+	ggplot(summary, aes(x=mark_value, y=mean, fill=status, color=status)) +#
+      geom_bar(position=position_dodge(), stat="identity") +#
+      xlab(xlabel) +#
+      ylab("Count") +#
+	  scale_fill_manual(values=c(light_blue, light_yellow), labels=c("Treatment 1", "Treatment 2")) +#
+	  scale_color_manual(values=c(dark_blue, dark_yellow)) +#
+      theme_bw()#
+}
+mark_histogram(summary, "Hamming distance TEP")
+mark_histogram <- function(summary, xlabel) {#
+	summary$mark_value <- factor(summary$mark_value)#
+	summary$status <- factor(summary$status)#
+	ggplot(summary, aes(x=mark_value, y=mean, fill=status, color=status)) +#
+      geom_bar(position=position_dodge(), stat="identity") +#
+      xlab(xlabel) +#
+      ylab("Count") +#
+	  scale_fill_manual(values=c(light_blue, light_yellow), labels=c("Placebo", "Vaccine")) +#
+	  scale_color_manual(values=c(dark_blue, dark_yellow)) +#
+      theme_bw()#
+}
+mark_histogram(summary, "Hamming distance TEP")
+mark_histogram <- function(summary, xlabel) {#
+	summary$mark_value <- factor(summary$mark_value)#
+	summary$status <- factor(summary$status)#
+	ggplot(summary, aes(x=mark_value, y=mean, fill=status, color=status)) +#
+      geom_bar(position=position_dodge(), stat="identity") +#
+      xlab(xlabel) +#
+      ylab("Proportion") +#
+	  scale_fill_manual(values=c(light_blue, light_yellow), labels=c("Placebo", "Vaccine")) +#
+	  scale_color_manual(values=c(dark_blue, dark_yellow), labels=c()) +#
+      theme_bw()#
+}
+mark_histogram(summary, "Hamming distance TEP")
+mark_histogram <- function(summary, xlabel) {#
+	summary$mark_value <- factor(summary$mark_value)#
+	summary$status <- factor(summary$status)#
+	ggplot(summary, aes(x=mark_value, y=mean, fill=status, color=status)) +#
+      geom_bar(position=position_dodge(), stat="identity") +#
+      xlab(xlabel) +#
+      ylab("Proportion") +#
+	  scale_fill_manual(values=c(light_blue, light_yellow), labels=c("Placebo", "Vaccine")) +#
+	  scale_color_manual(values=c(dark_blue, dark_yellow)) +#
+      theme_bw() +#
+      guides(color=guide_legend(title=NULL)#
+}
+mark_histogram <- function(summary, xlabel) {#
+	summary$mark_value <- factor(summary$mark_value)#
+	summary$status <- factor(summary$status)#
+	ggplot(summary, aes(x=mark_value, y=mean, fill=status, color=status)) +#
+      geom_bar(position=position_dodge(), stat="identity") +#
+      xlab(xlabel) +#
+      ylab("Proportion") +#
+	  scale_fill_manual(values=c(light_blue, light_yellow), labels=c("Placebo", "Vaccine")) +#
+	  scale_color_manual(values=c(dark_blue, dark_yellow)) +#
+      theme_bw() +#
+      guides(color=guide_legend(title=NULL))#
+}
+mark_histogram(summary, "Hamming distance TEP")
+mark_histogram <- function(summary, xlabel) {#
+	summary$mark_value <- factor(summary$mark_value)#
+	summary$status <- factor(summary$status)#
+	ggplot(summary, aes(x=mark_value, y=mean, fill=status, color=status)) +#
+      geom_bar(position=position_dodge(), stat="identity") +#
+      xlab(xlabel) +#
+      ylab("Proportion") +#
+	  scale_fill_manual(values=c(light_blue, light_yellow), labels=c("Placebo", "Vaccine")) +#
+	  scale_color_manual(values=c(dark_blue, dark_yellow), guide=FALSE) +#
+      theme_bw()#
+}
+mark_histogram(summary, "Hamming distance TEP")
+mark_histogram <- function(summary, xlabel) {#
+	summary$mark_value <- factor(summary$mark_value)#
+	summary$status <- factor(summary$status)#
+	ggplot(summary, aes(x=mark_value, y=mean, fill=status, color=status)) +#
+      geom_bar(position=position_dodge(), stat="identity") +#
+	  geom_errorbar(aes(ymin=mean-sd, ymax=mean+sd), width=.2, position=position_dodge(.9)) +      #
+      xlab(xlabel) +#
+      ylab("Proportion") +#
+	  scale_fill_manual(values=c(light_blue, light_yellow), labels=c("Placebo", "Vaccine")) +#
+	  scale_color_manual(values=c(dark_blue, dark_yellow), guide=FALSE) +#
+      theme_bw()#
+}
+mark_histogram(summary, "Hamming distance TEP")
+mark_histogram <- function(summary, xlabel) {#
+	summary$mark_value <- factor(summary$mark_value)#
+	summary$status <- factor(summary$status)#
+	ggplot(summary, aes(x=mark_value, y=mean, fill=status, color=status)) +#
+      geom_bar(position=position_dodge(), stat="identity") +#
+	  geom_errorbar(aes(ymin=mean-sd, ymax=mean+sd), width=.2, position=position_dodge(.9)) +      #
+      xlab(xlabel) +#
+      ylab("Proportion") +#
+	  scale_fill_manual(values=c(light_blue, light_yellow), labels=c("Placebo", "Vaccine")) +#
+	  scale_color_manual(values=c(dark_blue, dark_yellow), guide=FALSE) +#
+	  geom_text() +#
+      theme_bw()#
+}
+mark_histogram(summary, "Hamming distance TEP")
+mark_histogram <- function(summary, xlabel) {#
+	summary$mark_value <- factor(summary$mark_value)#
+	summary$status <- factor(summary$status)#
+	ggplot(summary, aes(x=mark_value, y=mean, fill=status, color=status)) +#
+      geom_bar(position=position_dodge(), stat="identity") +#
+	  geom_errorbar(aes(ymin=mean-sd, ymax=mean+sd), width=.2, position=position_dodge(.9)) +      #
+      xlab(xlabel) +#
+      ylab("Proportion") +#
+	  scale_fill_manual(values=c(light_blue, light_yellow), labels=c("Placebo", "Vaccine")) +#
+	  scale_color_manual(values=c(dark_blue, dark_yellow), guide=FALSE) +#
+	  geom_text(aes(x=mark_value, y=mean, ymax=mean, label=mean)) +#
+      theme_bw()#
+}
+mark_histogram(summary, "Hamming distance TEP")
+mark_histogram <- function(summary, xlabel) {#
+	summary$mark_value <- factor(summary$mark_value)#
+	summary$status <- factor(summary$status)#
+	ggplot(summary, aes(x=mark_value, y=mean, fill=status, color=status)) +#
+      geom_bar(position=position_dodge(), stat="identity") +#
+	  geom_errorbar(aes(ymin=mean-sd, ymax=mean+sd), width=.2, position=position_dodge(.9)) +      #
+      xlab(xlabel) +#
+      ylab("Proportion") +#
+	  scale_fill_manual(values=c(light_blue, light_yellow), labels=c("Placebo", "Vaccine")) +#
+	  scale_color_manual(values=c(dark_blue, dark_yellow), guide=FALSE) +#
+	  geom_text(aes(x=mark_value, y=mean, ymax=mean, label=paste(round(mean*100,0),"%",sep=""))) +#
+      theme_bw()#
+}
+mark_histogram(summary, "Hamming distance TEP")
+mark_histogram <- function(summary, xlabel) {#
+	summary$mark_value <- factor(summary$mark_value)#
+	summary$status <- factor(summary$status)#
+	ggplot(summary, aes(x=mark_value, y=mean, fill=status, color=status)) +#
+      geom_bar(position=position_dodge(), stat="identity") +#
+	  geom_errorbar(aes(ymin=mean-sd, ymax=mean+sd), width=.2, position=position_dodge(.9)) +      #
+      xlab(xlabel) +#
+      ylab("Proportion") +#
+	  scale_fill_manual(values=c(light_blue, light_yellow), labels=c("Placebo", "Vaccine")) +#
+	  scale_color_manual(values=c(dark_blue, dark_yellow), guide=FALSE) +#
+	  geom_text(aes(x=mark_value, y=mean, ymax=mean, label=paste(round(mean*1000,10),"%",sep=""))) +#
+      theme_bw()#
+}
+mark_histogram(summary, "Hamming distance TEP")
+mark_histogram <- function(summary, xlabel) {#
+	summary$mark_value <- factor(summary$mark_value)#
+	summary$status <- factor(summary$status)#
+	ggplot(summary, aes(x=mark_value, y=mean, fill=status, color=status)) +#
+      geom_bar(position=position_dodge(), stat="identity") +#
+	  geom_errorbar(aes(ymin=mean-sd, ymax=mean+sd), width=.2, position=position_dodge(.9)) +      #
+      xlab(xlabel) +#
+      ylab("Proportion") +#
+	  scale_fill_manual(values=c(light_blue, light_yellow), labels=c("Placebo", "Vaccine")) +#
+	  scale_color_manual(values=c(dark_blue, dark_yellow), guide=FALSE) +#
+	  geom_text(aes(x=mark_value, y=mean, ymax=mean, label=paste(round(mean*1000,0.1),"%",sep=""))) +#
+      theme_bw()#
+}
+mark_histogram(summary, "Hamming distance TEP")
+mark_histogram <- function(summary, xlabel) {#
+	summary$mark_value <- factor(summary$mark_value)#
+	summary$status <- factor(summary$status)#
+	ggplot(summary, aes(x=mark_value, y=mean, fill=status, color=status)) +#
+      geom_bar(position=position_dodge(), stat="identity") +#
+	  geom_errorbar(aes(ymin=mean-sd, ymax=mean+sd), width=.2, position=position_dodge(.9)) +      #
+      xlab(xlabel) +#
+      ylab("Proportion") +#
+	  scale_fill_manual(values=c(light_blue, light_yellow), labels=c("Placebo", "Vaccine")) +#
+	  scale_color_manual(values=c(dark_blue, dark_yellow), guide=FALSE) +#
+	  geom_text(aes(x=mark_value, y=mean, ymax=mean, label=paste(round(mean*100,1),"%",sep=""))) +#
+      theme_bw()#
+}
+mark_histogram(summary, "Hamming distance TEP")
+mark_histogram_labels <- function(summary, xlabel) {#
+	hist <- mark_histogram(summary, xlabel) + geom_text(aes(x=mark_value, y=mean, ymax=mean, label=paste(round(mean*100,1),"%",sep="")))#
+	return(hist)#
+}
+mark_histogram_labels(summary, "Hamming distance TEP")
+mark_histogram <- function(summary, xlabel) {#
+	summary$mark_value <- factor(summary$mark_value)#
+	summary$status <- factor(summary$status)#
+	ggplot(summary, aes(x=mark_value, y=mean, fill=status, color=status)) +#
+      geom_bar(position=position_dodge(), stat="identity") +#
+	  geom_errorbar(aes(ymin=mean-sd, ymax=mean+sd), width=.2, position=position_dodge(.9)) +      #
+      xlab(xlabel) +#
+      ylab("Proportion") +#
+	  scale_fill_manual(values=c(light_blue, light_yellow), labels=c("Placebo", "Vaccine")) +#
+	  scale_color_manual(values=c(dark_blue, dark_yellow), guide=FALSE) +#
+      theme_bw()#
+}
+mark_histogram_labels(summary, "Hamming distance TEP")
+hamming_histogram < function(marks_data, input_locus) {#
+	summary <- average_counts(marks_data, input_locus, "hamming_3D7")#
+	mark_histogram(summary, paste("Hamming distance", input_locus))#
+}
+hamming_histogram <- function(marks_data, input_locus) {#
+	summary <- average_counts(marks_data, input_locus, "hamming_3D7")#
+	mark_histogram(summary, paste("Hamming distance", input_locus))#
+}
+hamming_histogram(marks_data, "TEP")
+mark_histogram(summary, "Hamming distance TEP")
+summary
+subset(summary, mark_value == 0)
+tallies <- data.frame(mark_value= numeric(0), y= numeric(0), replicate = numeric(0))
+marks_data
+match_summary <- average_counts(marks_data, "TEP", "match_3D7")
+match_summary
+mark_histogram_labels(match_summary, "Match 3D7 TEP")
+mark_histogram_labels <- function(summary, xlabel) {#
+	hist <- mark_histogram(summary, xlabel) + #
+	  geom_text(aes(x=mark_value, y=mean, ymax=mean, label=paste(round(mean*100,1),"%",sep="")) + #
+	  position = position_dodge())#
+	return(hist)#
+}
+mark_histogram_labels <- function(summary, xlabel) {#
+	hist <- mark_histogram(summary, xlabel) + #
+	  geom_text(aes(x=mark_value, y=mean, ymax=mean, label=paste(round(mean*100,1),"%",sep="")), position = position_dodge())#
+	return(hist)#
+}
+mark_histogram_labels(match_summary, "Match 3D7 TEP")
+mark_histogram_labels <- function(summary, xlabel) {#
+	hist <- mark_histogram(summary, xlabel) + #
+	  geom_text(aes(x=mark_value, y=mean, ymax=mean, label=paste(round(mean*100,1),"%",sep="")), position = position_dodge(width=1))#
+	return(hist)#
+}
+mark_histogram_labels(match_summary, "Match 3D7 TEP")
+mark_histogram_labels <- function(summary, xlabel) {#
+	hist <- mark_histogram(summary, xlabel) + #
+	  geom_text(aes(x=mark_value, y=mean, ymax=mean, label=paste(round(mean*100,1),"%",sep="")), position = position_dodge(width=0.9))#
+	return(hist)#
+}
+mark_histogram_labels(match_summary, "Match 3D7 TEP")
+mark_histogram_labels <- function(summary, xlabel) {#
+	hist <- mark_histogram(summary, xlabel) + #
+	  geom_text(aes(x=mark_value, y=mean, ymax=mean, label=paste(round(mean*100,1),"%",sep="")), position = position_dodge(width=1.1))#
+	return(hist)#
+}
+mark_histogram_labels(match_summary, "Match 3D7 TEP")
+mark_histogram_labels <- function(summary, xlabel) {#
+	hist <- mark_histogram(summary, xlabel) + #
+	  geom_text(aes(x=mark_value, y=mean, ymax=mean, label=paste(round(mean*100,1),"%",sep="")), position = position_dodge(width=0.8))#
+	return(hist)#
+}
+mark_histogram_labels(match_summary, "Match 3D7 TEP")
+mark_histogram_labels <- function(summary, xlabel) {#
+	hist <- mark_histogram(summary, xlabel) + #
+	  geom_text(aes(x=mark_value, y=mean, ymax=mean, label=paste(round(mean*100,1),"%",sep="")), vjust=0, position = position_dodge(width=0.9))#
+	return(hist)#
+}
+mark_histogram_labels(match_summary, "Match 3D7 TEP")
+mark_histogram_labels <- function(summary, xlabel) {#
+	hist <- mark_histogram(summary, xlabel) + #
+	  geom_text(aes(x=mark_value, y=mean, ymax=mean, label=paste(round(mean*100,1),"%",sep="")), vjust=1, position = position_dodge(width=0.9))#
+	return(hist)#
+}
+mark_histogram_labels(match_summary, "Match 3D7 TEP")
+mark_histogram_labels <- function(summary, xlabel) {#
+	hist <- mark_histogram(summary, xlabel) + #
+	  geom_text(aes(x=mark_value, y=mean, ymax=mean, label=paste(round(mean*100,1),"%",sep="")), vjust=-1, position = position_dodge(width=0.9))#
+	return(hist)#
+}
+mark_histogram_labels(match_summary, "Match 3D7 TEP")
+mark_histogram_labels <- function(summary, xlabel) {#
+	hist <- mark_histogram(summary, xlabel) + #
+	  geom_text(aes(x=mark_value, y=mean, ymax=mean, label=paste(round(mean*100,1),"%",sep="")), vjust=-1, position = position_dodge(width=1.0))#
+	return(hist)#
+}
+mark_histogram_labels(match_summary, "Match 3D7 TEP")
+mark_histogram_labels <- function(summary, xlabel) {#
+	hist <- mark_histogram(summary, xlabel) + #
+	  geom_text(aes(x=mark_value, y=mean, ymax=mean, label=paste(round(mean*100,1),"%",sep="")), vjust=-1, position = position_dodge())#
+	return(hist)#
+}
+mark_histogram_labels(match_summary, "Match 3D7 TEP")
+mark_histogram_labels <- function(summary, xlabel) {#
+	hist <- mark_histogram(summary, xlabel) + #
+	  geom_text(aes(x=mark_value, y=mean, ymax=mean, label=paste(round(mean*100,1),"%",sep="")), vjust=-1, position = position_dodge(width=1.0))#
+	return(hist)#
+}
+mark_histogram_labels(match_summary, "Match 3D7 TEP")
+mark_histogram(summary, "Hamming distance TEP")
+mark_histogram_labels(match_summary, "Match 3D7 TEP")
+mark_histogram_labels <- function(summary, xlabel) {#
+	hist <- mark_histogram(summary, xlabel) + #
+	  geom_text(aes(x=mark_value, y=mean, ymax=mean, label=paste(round(mean*100,1),"%",sep="")), vjust=-0.5, position = position_dodge(width=1.0))#
+	return(hist)#
+}
+mark_histogram_labels(match_summary, "Match 3D7 TEP")
+mark_histogram_labels <- function(summary, xlabel) {#
+	hist <- mark_histogram(summary, xlabel) + #
+	  geom_text(aes(x=mark_value, y=mean, ymax=mean, label=paste(round(mean*100,1),"%",sep="")), vjust=-0.75, position = position_dodge(width=1.0))#
+	return(hist)#
+}
+mark_histogram_labels(match_summary, "Match 3D7 TEP")
+mark_histogram_labels <- function(summary, xlabel) {#
+	hist <- mark_histogram(summary, xlabel) + #
+	  geom_text(aes(x=mark_value, y=mean, ymax=mean, label=paste(round(mean*100,1),"%",sep="")), vjust=-1, position = position_dodge(width=1.0))#
+	return(hist)#
+}
+mark_histogram_labels(match_summary, "Match 3D7 TEP")
+pTEP = mark_histogram(average_counts(marks_data, "TEP", "hamming_3D7"), "Hamming distance TEP")#
+pUnnamed = mark_histogram(average_counts(marks_data, "Unnamed", "hamming_3D7"), "Hamming distance Unnamed")#
+pTh2R = mark_histogram(average_counts(marks_data, "Th2R", "hamming_3D7"), "Hamming distance Th2R")#
+pTh3R = mark_histogram(average_counts(marks_data, "Th3R", "hamming_3D7"), "Hamming distance Th3R")#
+pSERA2 = mark_histogram(average_counts(marks_data, "SERA2", "hamming_3D7"), "Hamming distance SERA2")#
+pTRAP = mark_histogram(average_counts(marks_data, "TRAP", "hamming_3D7"), "Hamming distance TRAP")#
+multiplot(pTEP, pUnnamed, pTh2R, pTh3R, pSERA2, pTRAP, cols=2, layout=matrix(c(1,2,3,4,5,6), nrow=3, byrow=TRUE))
+mark_histogram_labels(match_summary, "Match 3D7 TEP")
+mark_histogram_labels(match_summary, "TEP")
+mark_histogram_labels <- function(summary, xlabel) {#
+	hist <- mark_histogram(summary, xlabel) + #
+	  geom_text(aes(x=mark_value, y=mean, ymax=mean, label=paste(round(mean*100,1),"%",sep="")), vjust=-1, position = position_dodge(width=1.0)) +#
+	  scale_x_discrete(labels=c("Mismatch","Match"))#
+	return(hist)#
+}
+mark_histogram_labels(match_summary, "TEP")
+pTEP = mark_histogram_labels(average_counts(marks_data, "TEP", "match_3D7"), "TEP")#
+pUnnamed = mark_histogram_labels(average_counts(marks_data, "Unnamed", "match_3D7"), "Unnamed")#
+pTh2R = mark_histogram_labels(average_counts(marks_data, "Th2R", "match_3D7"), "Th2R")#
+pTh3R = mark_histogram_labels(average_counts(marks_data, "Th3R", "match_3D7"), "Th3R")#
+pSERA2 = mark_histogram_labels(average_counts(marks_data, "SERA2", "match_3D7"), "SERA2")#
+pTRAP = mark_histogram_labels(average_counts(marks_data, "TRAP", "match_3D7"), "TRAP")#
+multiplot(pTEP, pUnnamed, pTh2R, pTh3R, pSERA2, pTRAP, cols=2, layout=matrix(c(1,2,3,4,5,6), nrow=3, byrow=TRUE))
+marks_data
+summary_match
+match_summary
+mark_histogram_labels <- function(summary, xlabel) {#
+	summary <- subset(summary, mark_value==1)#
+	hist <- mark_histogram(summary, xlabel) + #
+	  geom_text(aes(x=mark_value, y=mean, ymax=mean, label=paste(round(mean*100,1),"%",sep="")), vjust=-1, position = position_dodge(width=1.0)) +#
+	  scale_x_discrete(labels=c("Mismatch","Match"))#
+	return(hist)#
+}
+match_plot <- function(summary, xlabel) {#
+	summary <- subset(summary, mark_value==1)#
+	hist <- mark_histogram(summary, xlabel) + #
+	  geom_text(aes(x=mark_value, y=mean, ymax=mean, label=paste(round(mean*100,1),"%",sep="")), vjust=-1, position = position_dodge(width=1.0)) +#
+	  scale_x_discrete(labels=c("Mismatch","Match"))#
+	return(hist)#
+}
+match_plot(average_counts(marks_data, "TEP", "match_3D7"), "TEP")
+match_plot <- function(summary, xlabel) {#
+	summary <- subset(summary, mark_value==1)#
+	hist <- mark_histogram(summary, xlabel) + #
+	  geom_text(aes(x=mark_value, y=mean, ymax=mean, label=paste(round(mean*100,1),"%",sep="")), vjust=-1, position = position_dodge(width=1.0)) +#
+	  scale_x_discrete(labels=c(""))#
+	return(hist)#
+}
+match_plot(average_counts(marks_data, "TEP", "match_3D7"), "Match TEP")
+match_plot <- function(summary, xlabel) {#
+	summary <- subset(summary, mark_value==1)#
+	hist <- mark_histogram(summary, xlabel) + #
+	  geom_text(aes(x=mark_value, y=mean, ymax=mean, label=paste(round(mean*100,1),"%",sep="")), vjust=-1, position = position_dodge(width=0.9)) +#
+	  scale_x_discrete(labels=c(""))#
+	return(hist)#
+}
+match_plot(average_counts(marks_data, "TEP", "match_3D7"), "Match TEP")
+match_plot <- function(summary, xlabel) {#
+	summary <- subset(summary, mark_value==1)#
+	hist <- mark_histogram(summary, xlabel) + #
+	  geom_text(aes(x=mark_value, y=mean, ymax=mean, label=paste(round(mean*100,1),"%",sep="")), vjust=-1, position = position_dodge(width=0.92)) +#
+	  scale_x_discrete(labels=c(""))#
+	return(hist)#
+}
+match_plot(average_counts(marks_data, "TEP", "match_3D7"), "Match TEP")
+match_plot <- function(summary, xlabel) {#
+	summary <- subset(summary, mark_value==1)#
+	hist <- mark_histogram(summary, xlabel) + #
+	  geom_text(aes(x=mark_value, y=mean, ymax=mean, label=paste(round(mean*100,1),"%",sep="")), vjust=2, position = position_dodge(width=0.88)) +#
+	  scale_x_discrete(labels=c(""))#
+	return(hist)#
+}
+match_plot(average_counts(marks_data, "TEP", "match_3D7"), "Match TEP")
+match_plot <- function(summary, xlabel) {#
+	summary <- subset(summary, mark_value==1)#
+	hist <- mark_histogram(summary, xlabel) + #
+	  geom_text(aes(x=mark_value, y=mean, ymax=mean, label=paste(round(mean*100,1),"%",sep="")), color="black", vjust=5, position = position_dodge(width=0.9)) +#
+	  scale_x_discrete(labels=c(""))#
+	return(hist)#
+}
+match_plot(average_counts(marks_data, "TEP", "match_3D7"), "Match TEP")
+match_plot <- function(summary, xlabel) {#
+	summary <- subset(summary, mark_value==1)#
+	hist <- mark_histogram(summary, xlabel) + #
+	  geom_text(aes(x=mark_value, y=mean, ymax=mean, label=paste(round(mean*100,1),"%",sep="")), color="black", vjust=50, position = position_dodge(width=0.9)) +#
+	  scale_x_discrete(labels=c(""))#
+	return(hist)#
+}
+match_plot(average_counts(marks_data, "TEP", "match_3D7"), "Match TEP")
+match_plot <- function(summary, xlabel) {#
+	summary <- subset(summary, mark_value==1)#
+	hist <- mark_histogram(summary, xlabel) + #
+	  geom_text(aes(x=mark_value, y=mean, ymax=mean, label=paste(round(mean*100,1),"%",sep="")), color="black", vjust=20, position = position_dodge(width=0.9)) +#
+	  scale_x_discrete(labels=c(""))#
+	return(hist)#
+}
+match_plot(match_summary, "Match TEP")
+pTEP = match_plot(average_counts(marks_data, "TEP", "match_3D7"), "Match TEP")#
+pUnnamed = match_plot(average_counts(marks_data, "Unnamed", "match_3D7"), "Match Unnamed")#
+pTh2R = match_plot(average_counts(marks_data, "Th2R", "match_3D7"), "Match Th2R")#
+pTh3R = match_plot(average_counts(marks_data, "Th3R", "match_3D7"), "Match Th3R")#
+pSERA2 = match_plot(average_counts(marks_data, "SERA2", "match_3D7"), "Match SERA2")#
+pTRAP = match_plot(average_counts(marks_data, "TRAP", "match_3D7"), "Match TRAP")#
+multiplot(pTEP, pUnnamed, pTh2R, pTh3R, pSERA2, pTRAP, cols=2, layout=matrix(c(1,2,3,4,5,6), nrow=3, byrow=TRUE))
+match_plot(match_summary, "Match TEP")
+match_plot <- function(summary, xlabel) {#
+	summary <- subset(summary, mark_value==1)#
+	hist <- mark_histogram(summary, xlabel) + #
+	  geom_text(aes(x=mark_value, y=mean, ymax=mean, label=paste(round(mean*100,1),"%",sep="")), color="black", vjust=2, position = position_dodge(width=0.9)) +#
+	  scale_x_discrete(labels=c(""))#
+	return(hist)#
+}
+pTEP = match_plot(average_counts(marks_data, "TEP", "match_3D7"), "Match TEP")#
+pUnnamed = match_plot(average_counts(marks_data, "Unnamed", "match_3D7"), "Match Unnamed")#
+pTh2R = match_plot(average_counts(marks_data, "Th2R", "match_3D7"), "Match Th2R")#
+pTh3R = match_plot(average_counts(marks_data, "Th3R", "match_3D7"), "Match Th3R")#
+pSERA2 = match_plot(average_counts(marks_data, "SERA2", "match_3D7"), "Match SERA2")#
+pTRAP = match_plot(average_counts(marks_data, "TRAP", "match_3D7"), "Match TRAP")#
+multiplot(pTEP, pUnnamed, pTh2R, pTh3R, pSERA2, pTRAP, cols=2, layout=matrix(c(1,2,3,4,5,6), nrow=3, byrow=TRUE))
+subjects = unique(sort(marks_data$subject))#
+proportion_for_subject <- function(marks_data, input_locus, input_mark, input_subject, seed=NULL) {#
+	marks_data = subset(marks_data, subject == input_subject & locus == input_locus & mark_name == input_mark)#
+	pro = 0#
+	if (nrow(marks_data) > 0) {#
+		identities = integer(10)#
+		for (i in 1:10) {#
+			value1 = getGtSample(marks_data, input_locus, input_mark, seed)$mark_value#
+			value2 = getGtSample(marks_data, input_locus, input_mark, seed)$mark_value#
+			if (value1 == value2) {#
+				identities[i] = 0#
+			}#
+			else {#
+				identities[i] = 1#
+			}#
+		}#
+		pro = mean(identities)#
+	}#
+	return(pro)#
+}#
+variability_for_subject <- function(marks_data, input_locus, input_mark, input_subject) {#
+	values = subset(marks_data, subject == input_subject & locus == input_locus & mark_name == input_mark)$mark_value#
+	values = unique(values)#
+	var = -1#
+	if (length(values) == 1) {#
+		var = 0#
+	}#
+	if (length(values) > 1) {#
+		var = 1#
+	}#
+	return(var)#
+}#
+proportions = sapply(subjects, function(subject) variability_for_subject(marks_data, "TEP", "hamming_3D7", subject))#
+mean(proportions[proportions > -1])
+knitr("descriptive-analysis.Rmd")
+library(knitr)
+knit("descriptive-analysis.Rmd")
+knit("descriptive-analysis.Rmd")
