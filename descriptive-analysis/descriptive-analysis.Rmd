@@ -2,27 +2,22 @@
 
 ## Setup
 
-### Require `ggplot2` and `plyr`
+Set global variables and load packages and functions.
 
-```{r}
+```{r setup, include=FALSE}
+replicate_count = 3
+
 require(ggplot2)
 require(plyr)
 require(grid)
-```
 
-### Colors
-
-```{r}
 blue = rgb(0.330, 0.484, 0.828)
 light_blue = rgb(0.531, 0.639, 0.880)
 dark_blue = rgb(0.198, 0.290, 0.500)
 yellow = rgb(0.829, 0.680, 0.306)
 light_yellow = rgb(0.880, 0.776, 0.514)
 dark_yellow = rgb(0.497, 0.408, 0.183)
-```
 
-### Multiplot
-```{r}
 # Multiple plot function
 #
 # ggplot objects can be passed in ..., or to plotlist (as a list of ggplot objects)
@@ -70,15 +65,16 @@ multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
 }
 ```
 
-### Load marks file
+Load marks file.
 
-```{r}
-marks_data_c = read.table("../adata/marks_data_c.tsv", header = TRUE)
-marks_data_x = read.table("../adata/marks_data_x.tsv", header = TRUE)
+```{r load, include=FALSE}
+marks_data_c = read.table("../adata/marks_data_c.tsv", header = TRUE, sep = '\t')
+marks_data_x = read.table("../adata/marks_data_x.tsv", header = TRUE, sep = '\t')
 ```
 
-### Randomly subsample to a single parasite per subject for a specific locus / mark / vaccine status combination
-```{r}
+Make function to randomly subsample to a single parasite per subject for a specific locus / mark / vaccine status combination.
+
+```{r sample, include=FALSE}
 getGtSample <- function(marks_data, input_locus, input_mark, input_status, seed=NULL) {
 	marks_data <- subset(marks_data, locus == input_locus & mark_name == input_mark & vaccine_status == input_status)
 	if (!is.null(seed)){ set.seed(seed) }
@@ -88,12 +84,12 @@ getGtSample <- function(marks_data, input_locus, input_mark, input_status, seed=
 }
 ```
 
-### Summarize mean and standard deviation of histogram bins across subsamples
+Make function to summarize mean and standard deviation of histogram bins across subsamples.
 
-```{r}
+```{r summarize, include=FALSE}
 average_counts_status <- function(marks_data, input_locus, input_mark, input_status) {
 	tallies <- data.frame(mark_value= numeric(0), y= numeric(0), replicate = numeric(0))
-	for (i in 1:100) {
+	for (i in 1:replicate_count) {
 		subsetted = getGtSample(marks_data, input_locus, input_mark, input_status)
 		counts = ddply(subsetted, "mark_value", summarise, y = length(mark_value))
 		counts$replicate <- i
@@ -116,17 +112,9 @@ average_counts <- function(marks_data, input_locus, input_mark) {
 }
 ```
 
-### Build plots from summaries
+Make plotting functions.
 
-```{r}
-match_plot <- function(summary, xlabel) {
-	summary <- subset(summary, mark_value==1)
-	hist <- mark_histogram(summary, xlabel) + 
-	  geom_text(aes(x=mark_value, y=mean, ymax=mean, label=paste(round(mean*100,1),"%",sep="")), color="black", vjust=2.2, position = position_dodge(width=0.9)) +
-	  scale_x_discrete(labels=c(""))
-	return(hist)
-}
-
+```{r plots, include=FALSE}
 hamming_plot <- function(summary, xlabel) {
 	summary$mark_value <- factor(summary$mark_value)
 	summary$status <- factor(summary$status)
@@ -139,13 +127,37 @@ hamming_plot <- function(summary, xlabel) {
 	  scale_color_manual(values=c(dark_blue, dark_yellow), guide=FALSE) +
       theme_bw()
 }
+
+match_plot <- function(summary, xlabel) {
+	summary <- subset(summary, mark_value==1)
+	hist <- hamming_plot(summary, xlabel) + 
+	  geom_text(aes(x=mark_value, y=mean, ymax=mean, label=paste(round(mean*100,1),"%",sep="")), color="black", vjust=2.2, position = position_dodge(width=0.9)) +
+	  scale_x_discrete(labels=c(""))
+	return(hist)
+}
+
+match_plot <- function(summary, xlabel) {
+	summary <- subset(summary, mark_value==1)
+	summary$mark_value <- factor(summary$mark_value)
+	summary$status <- factor(summary$status)	
+	ggplot(summary, aes(x=status, y=mean, fill=status, color=status)) +
+      geom_bar(position=position_dodge(), stat="identity") +
+	  geom_errorbar(aes(ymin=mean-sd, ymax=mean+sd), width=.2, position=position_dodge(.9)) +      
+      xlab(xlabel) +
+      ylab("Proportion") +
+	  scale_fill_manual(values=c(light_blue, light_yellow), labels=c("Placebo", "Vaccine")) +
+	  scale_color_manual(values=c(dark_blue, dark_yellow), guide=FALSE) +
+	  geom_text(aes(x=status, y=mean, ymax=mean, label=paste(round(mean*100,1),"%",sep="")), color="black", vjust=2.2, position = position_dodge(width=0.9)) +
+	  scale_x_discrete(labels=c("")) +
+      theme_bw()
+}
 ```
 
 ## Clinical
 
 ### Match vs mismatch
 
-```{r dpi=150}
+```{r match-c, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE}
 pTEP = match_plot(average_counts(marks_data_c, "TEP", "match_3D7"), "Match TEP")
 pUnnamed = match_plot(average_counts(marks_data_c, "Unnamed", "match_3D7"), "Match Unnamed")
 pTh2R = match_plot(average_counts(marks_data_c, "Th2R", "match_3D7"), "Match Th2R")
@@ -157,7 +169,7 @@ multiplot(pTEP, pUnnamed, pTh2R, pTh3R, pSERA2, pTRAP, cols=2, layout=matrix(c(1
 
 ### Hamming distance
 
-```{r dpi=150}
+```{r hamming-c, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE}
 pTEP = hamming_plot(average_counts(marks_data_c, "TEP", "hamming_3D7"), "Hamming distance TEP")
 pUnnamed = hamming_plot(average_counts(marks_data_c, "Unnamed", "hamming_3D7"), "Hamming distance Unnamed")
 pTh2R = hamming_plot(average_counts(marks_data_c, "Th2R", "hamming_3D7"), "Hamming distance Th2R")
@@ -171,7 +183,7 @@ multiplot(pTEP, pUnnamed, pTh2R, pTh3R, pSERA2, pTRAP, cols=2, layout=matrix(c(1
 
 ### Match vs mismatch
 
-```{r dpi=150}
+```{r match-x, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE}
 pTEP = match_plot(average_counts(marks_data_x, "TEP", "match_3D7"), "Match TEP")
 pUnnamed = match_plot(average_counts(marks_data_x, "Unnamed", "match_3D7"), "Match Unnamed")
 pTh2R = match_plot(average_counts(marks_data_x, "Th2R", "match_3D7"), "Match Th2R")
@@ -183,7 +195,7 @@ multiplot(pTEP, pUnnamed, pTh2R, pTh3R, pSERA2, pTRAP, cols=2, layout=matrix(c(1
 
 ### Hamming distance
 
-```{r dpi=150}
+```{r hamming-x, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE}
 pTEP = hamming_plot(average_counts(marks_data_x, "TEP", "hamming_3D7"), "Hamming distance TEP")
 pUnnamed = hamming_plot(average_counts(marks_data_x, "Unnamed", "hamming_3D7"), "Hamming distance Unnamed")
 pTh2R = hamming_plot(average_counts(marks_data_x, "Th2R", "hamming_3D7"), "Hamming distance Th2R")

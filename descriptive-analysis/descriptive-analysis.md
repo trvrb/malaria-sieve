@@ -2,220 +2,52 @@
 
 ## Setup
 
-### Require `ggplot2` and `plyr`
+Set global variables and load packages and functions.
 
 
-```r
-require(ggplot2)
-require(plyr)
-require(grid)
-```
 
-### Colors
+Load marks file.
 
 
-```r
-blue = rgb(0.330, 0.484, 0.828)
-light_blue = rgb(0.531, 0.639, 0.880)
-dark_blue = rgb(0.198, 0.290, 0.500)
-yellow = rgb(0.829, 0.680, 0.306)
-light_yellow = rgb(0.880, 0.776, 0.514)
-dark_yellow = rgb(0.497, 0.408, 0.183)
-```
 
-### Multiplot
-
-```r
-# Multiple plot function
-#
-# ggplot objects can be passed in ..., or to plotlist (as a list of ggplot objects)
-# - cols:   Number of columns in layout
-# - layout: A matrix specifying the layout. If present, 'cols' is ignored.
-#
-# If the layout is something like matrix(c(1,2,3,3), nrow=2, byrow=TRUE),
-# then plot 1 will go in the upper left, 2 will go in the upper right, and
-# 3 will go all the way across the bottom.
-#
-multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
-  require(grid)
-
-  # Make a list from the ... arguments and plotlist
-  plots <- c(list(...), plotlist)
-
-  numPlots = length(plots)
-
-  # If layout is NULL, then use 'cols' to determine layout
-  if (is.null(layout)) {
-    # Make the panel
-    # ncol: Number of columns of plots
-    # nrow: Number of rows needed, calculated from # of cols
-    layout <- matrix(seq(1, cols * ceiling(numPlots/cols)),
-                    ncol = cols, nrow = ceiling(numPlots/cols))
-  }
-
- if (numPlots==1) {
-    print(plots[[1]])
-
-  } else {
-    # Set up the page
-    grid.newpage()
-    pushViewport(viewport(layout = grid.layout(nrow(layout), ncol(layout))))
-
-    # Make each plot, in the correct location
-    for (i in 1:numPlots) {
-      # Get the i,j matrix positions of the regions that contain this subplot
-      matchidx <- as.data.frame(which(layout == i, arr.ind = TRUE))
-
-      print(plots[[i]], vp = viewport(layout.pos.row = matchidx$row,
-                                      layout.pos.col = matchidx$col))
-    }
-  }
-}
-```
-
-### Load marks file
+Make function to randomly subsample to a single parasite per subject for a specific locus / mark / vaccine status combination.
 
 
-```r
-marks_data_c = read.table("../adata/marks_data_c.tsv", header = TRUE)
-marks_data_x = read.table("../adata/marks_data_x.tsv", header = TRUE)
-```
 
-### Randomly subsample to a single parasite per subject for a specific locus / mark / vaccine status combination
-
-```r
-getGtSample <- function(marks_data, input_locus, input_mark, input_status, seed=NULL) {
-	marks_data <- subset(marks_data, locus == input_locus & mark_name == input_mark & vaccine_status == input_status)
-	if (!is.null(seed)){ set.seed(seed) }
-	marks_data <- marks_data[sample(NROW(marks_data)),]
-	idx <- which(!duplicated(marks_data$subject))
-	return(marks_data[idx,])
-}
-```
-
-### Summarize mean and standard deviation of histogram bins across subsamples
+Make function to summarize mean and standard deviation of histogram bins across subsamples.
 
 
-```r
-average_counts_status <- function(marks_data, input_locus, input_mark, input_status) {
-	tallies <- data.frame(mark_value= numeric(0), y= numeric(0), replicate = numeric(0))
-	for (i in 1:100) {
-		subsetted = getGtSample(marks_data, input_locus, input_mark, input_status)
-		counts = ddply(subsetted, "mark_value", summarise, y = length(mark_value))
-		counts$replicate <- i
-		tallies <- rbind(tallies, counts)
-	}
-	summary = ddply(tallies,~mark_value,summarise,mean=mean(y),sd=sd(y))
-	total = sum(summary$mean)
-	summary$mean = summary$mean/total
-	summary$sd = summary$sd/total	
-	return(summary)
-}
 
-average_counts <- function(marks_data, input_locus, input_mark) {
-	summary_placebo <- average_counts_status(marks_data, input_locus, input_mark, 0)
-	summary_vaccine <- average_counts_status(marks_data, input_locus, input_mark, 1)
-	summary_placebo$status <- 0
-	summary_vaccine$status <- 1
-	summary <- rbind(summary_placebo, summary_vaccine)
-	return(summary)
-}
-```
-
-### Build plots from summaries
+Make plotting functions.
 
 
-```r
-match_plot <- function(summary, xlabel) {
-	summary <- subset(summary, mark_value==1)
-	hist <- mark_histogram(summary, xlabel) + 
-	  geom_text(aes(x=mark_value, y=mean, ymax=mean, label=paste(round(mean*100,1),"%",sep="")), color="black", vjust=2.2, position = position_dodge(width=0.9)) +
-	  scale_x_discrete(labels=c(""))
-	return(hist)
-}
-
-hamming_plot <- function(summary, xlabel) {
-	summary$mark_value <- factor(summary$mark_value)
-	summary$status <- factor(summary$status)
-	ggplot(summary, aes(x=mark_value, y=mean, fill=status, color=status)) +
-      geom_bar(position=position_dodge(), stat="identity") +
-	  geom_errorbar(aes(ymin=mean-sd, ymax=mean+sd), width=.2, position=position_dodge(.9)) +      
-      xlab(xlabel) +
-      ylab("Proportion") +
-	  scale_fill_manual(values=c(light_blue, light_yellow), labels=c("Placebo", "Vaccine")) +
-	  scale_color_manual(values=c(dark_blue, dark_yellow), guide=FALSE) +
-      theme_bw()
-}
-```
 
 ## Clinical
 
 ### Match vs mismatch
 
 
-```r
-pTEP = match_plot(average_counts(marks_data_c, "TEP", "match_3D7"), "Match TEP")
-pUnnamed = match_plot(average_counts(marks_data_c, "Unnamed", "match_3D7"), "Match Unnamed")
-pTh2R = match_plot(average_counts(marks_data_c, "Th2R", "match_3D7"), "Match Th2R")
-pTh3R = match_plot(average_counts(marks_data_c, "Th3R", "match_3D7"), "Match Th3R")
-pSERA2 = match_plot(average_counts(marks_data_c, "SERA2", "match_3D7"), "Match SERA2")
-pTRAP = match_plot(average_counts(marks_data_c, "TRAP", "match_3D7"), "Match TRAP")
-multiplot(pTEP, pUnnamed, pTh2R, pTh3R, pSERA2, pTRAP, cols=2, layout=matrix(c(1,2,3,4,5,6), nrow=3, byrow=TRUE))
+```
+## Error: Aesthetics must either be length one, or the same length as the dataProblems:status, mean, mean, status
 ```
 
-```
-## Error: Aesthetics must either be length one, or the same length as the dataProblems:mark_value, mean, mean, status
-```
-
-![plot of chunk unnamed-chunk-8](figure/unnamed-chunk-8-1.png) 
+![plot of chunk match-c](figures/match-c-1.png) 
 
 ### Hamming distance
 
-
-```r
-pTEP = hamming_plot(average_counts(marks_data_c, "TEP", "hamming_3D7"), "Hamming distance TEP")
-pUnnamed = hamming_plot(average_counts(marks_data_c, "Unnamed", "hamming_3D7"), "Hamming distance Unnamed")
-pTh2R = hamming_plot(average_counts(marks_data_c, "Th2R", "hamming_3D7"), "Hamming distance Th2R")
-pTh3R = hamming_plot(average_counts(marks_data_c, "Th3R", "hamming_3D7"), "Hamming distance Th3R")
-pSERA2 = hamming_plot(average_counts(marks_data_c, "SERA2", "hamming_3D7"), "Hamming distance SERA2")
-pTRAP = hamming_plot(average_counts(marks_data_c, "TRAP", "hamming_3D7"), "Hamming distance TRAP")
-multiplot(pTEP, pUnnamed, pTh2R, pTh3R, pSERA2, pTRAP, cols=2, layout=matrix(c(1,2,3,4,5,6), nrow=3, byrow=TRUE))
-```
-
-![plot of chunk unnamed-chunk-9](figure/unnamed-chunk-9-1.png) 
+![plot of chunk hamming-c](figures/hamming-c-1.png) 
 
 ## Cross-sectional
 
 ### Match vs mismatch
 
 
-```r
-pTEP = match_plot(average_counts(marks_data_x, "TEP", "match_3D7"), "Match TEP")
-pUnnamed = match_plot(average_counts(marks_data_x, "Unnamed", "match_3D7"), "Match Unnamed")
-pTh2R = match_plot(average_counts(marks_data_x, "Th2R", "match_3D7"), "Match Th2R")
-pTh3R = match_plot(average_counts(marks_data_x, "Th3R", "match_3D7"), "Match Th3R")
-pSERA2 = match_plot(average_counts(marks_data_x, "SERA2", "match_3D7"), "Match SERA2")
-pTRAP = match_plot(average_counts(marks_data_x, "TRAP", "match_3D7"), "Match TRAP")
-multiplot(pTEP, pUnnamed, pTh2R, pTh3R, pSERA2, pTRAP, cols=2, layout=matrix(c(1,2,3,4,5,6), nrow=3, byrow=TRUE))
+```
+## Error: Aesthetics must either be length one, or the same length as the dataProblems:status, mean, mean, status
 ```
 
-```
-## Error: Aesthetics must either be length one, or the same length as the dataProblems:mark_value, mean, mean, status
-```
-
-![plot of chunk unnamed-chunk-10](figure/unnamed-chunk-10-1.png) 
+![plot of chunk match-x](figures/match-x-1.png) 
 
 ### Hamming distance
 
-
-```r
-pTEP = hamming_plot(average_counts(marks_data_x, "TEP", "hamming_3D7"), "Hamming distance TEP")
-pUnnamed = hamming_plot(average_counts(marks_data_x, "Unnamed", "hamming_3D7"), "Hamming distance Unnamed")
-pTh2R = hamming_plot(average_counts(marks_data_x, "Th2R", "hamming_3D7"), "Hamming distance Th2R")
-pTh3R = hamming_plot(average_counts(marks_data_x, "Th3R", "hamming_3D7"), "Hamming distance Th3R")
-pSERA2 = hamming_plot(average_counts(marks_data_x, "SERA2", "hamming_3D7"), "Hamming distance SERA2")
-pTRAP = hamming_plot(average_counts(marks_data_x, "TRAP", "hamming_3D7"), "Hamming distance TRAP")
-multiplot(pTEP, pUnnamed, pTh2R, pTh3R, pSERA2, pTRAP, cols=2, layout=matrix(c(1,2,3,4,5,6), nrow=3, byrow=TRUE))
-```
-
-![plot of chunk unnamed-chunk-11](figure/unnamed-chunk-11-1.png) 
+![plot of chunk hamming-x](figures/hamming-x-1.png) 
