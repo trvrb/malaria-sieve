@@ -29,8 +29,11 @@ marks_data_x = read.table("../adata/marks_data_x.tsv", header = TRUE, sep = '\t'
 Make function to randomly subsample to a single parasite per subject for a specific locus / mark / vaccine status combination.
 
 ```{r sample, include=FALSE}
-getGtSample <- function(marks_data, input_locus, input_mark, input_status, seed=NULL) {
-	marks_data <- subset(marks_data, locus == input_locus & mark_name == input_mark & vaccine_status == input_status)
+getGtSample <- function(marks_data, input_locus, input_mark, input_age, input_status, input_site=NULL, seed=NULL) {
+	marks_data <- subset(marks_data, locus == input_locus & mark_name == input_mark & age_cohort == input_age & vaccine_status == input_status)
+	if (!is.null(input_site)) {
+		marks_data <- subset(marks_data, study_site == input_site)
+	}
 	if (!is.null(seed)){ set.seed(seed) }
 	marks_data <- marks_data[sample(NROW(marks_data)),]
 	idx <- which(!duplicated(marks_data$subject))
@@ -41,10 +44,10 @@ getGtSample <- function(marks_data, input_locus, input_mark, input_status, seed=
 Make function to summarize mean and standard deviation of histogram bins across subsamples.
 
 ```{r summarize, include=FALSE}
-average_counts_status <- function(marks_data, input_locus, input_mark, input_status) {
+average_counts_status <- function(marks_data, input_locus, input_mark, input_age, input_status, input_site=NULL) {
 	tallies <- data.frame(mark_value= numeric(0), y= numeric(0), replicate = numeric(0))
 	for (i in 1:replicate_count) {
-		subsetted = getGtSample(marks_data, input_locus, input_mark, input_status)
+		subsetted = getGtSample(marks_data, input_locus, input_mark, input_age, input_status, input_site)
 		counts = ddply(subsetted, "mark_value", summarise, y = length(mark_value))
 		counts$replicate <- i
 		tallies <- rbind(tallies, counts)
@@ -56,21 +59,21 @@ average_counts_status <- function(marks_data, input_locus, input_mark, input_sta
 	return(summary)
 }
 
-average_counts_locus <- function(marks_data, input_locus, input_mark) {
-	summary_placebo <- average_counts_status(marks_data, input_locus, input_mark, 0)
-	summary_vaccine <- average_counts_status(marks_data, input_locus, input_mark, 1)
+average_counts_locus <- function(marks_data, input_locus, input_mark, input_age, input_site=NULL) {
+	summary_placebo <- average_counts_status(marks_data, input_locus, input_mark, input_age, 0, input_site)
+	summary_vaccine <- average_counts_status(marks_data, input_locus, input_mark, input_age, 1, input_site)
 	summary_placebo$status <- 0
 	summary_vaccine$status <- 1
 	summary <- rbind(summary_placebo, summary_vaccine)
 	return(summary)
 }
 
-average_counts <- function(marks_data, input_mark) {
-	summary_TEP <- average_counts_locus(marks_data, "TEP", input_mark)
-	summary_Unnamed <- average_counts_locus(marks_data, "Unnamed", input_mark)
-	summary_Th2R <- average_counts_locus(marks_data, "Th2R", input_mark)
-	summary_Th3R <- average_counts_locus(marks_data, "Th3R", input_mark)
-	summary_SERA2 <- average_counts_locus(marks_data, "SERA2", input_mark)			
+average_counts <- function(marks_data, input_mark, input_age, input_site=NULL) {
+	summary_TEP <- average_counts_locus(marks_data, "TEP", input_mark, input_age, input_site)
+	summary_Unnamed <- average_counts_locus(marks_data, "Unnamed", input_mark, input_age, input_site)
+	summary_Th2R <- average_counts_locus(marks_data, "Th2R", input_mark, input_age, input_site)
+	summary_Th3R <- average_counts_locus(marks_data, "Th3R", input_mark, input_age, input_site)
+	summary_SERA2 <- average_counts_locus(marks_data, "SERA2", input_mark, input_age, input_site)
 	summary_TEP$locus <- "TEP"
 	summary_Unnamed$locus <- "Unnamed"	
 	summary_Th2R$locus <- "Th2R"	
@@ -79,20 +82,36 @@ average_counts <- function(marks_data, input_mark) {
 	summary <- rbind(summary_TEP, summary_Unnamed, summary_Th2R, summary_Th3R, summary_SERA2)	
 	return(summary)
 }
+
+average_counts_across_sites <- function(marks_data, input_locus, input_mark, input_age) {
+	summary_Agogo <- average_counts_locus(marks_data, input_locus, input_mark, input_age, "Agogo")
+	summary_Kintampo <- average_counts_locus(marks_data, input_locus, input_mark, input_age, "Kintampo")
+	summary_Kombewa <- average_counts_locus(marks_data, input_locus, input_mark, input_age, "Kombewa")
+	summary_Nanoro <- average_counts_locus(marks_data, input_locus, input_mark, input_age, "Nanoro")
+	summary_Siaya <- average_counts_locus(marks_data, input_locus, input_mark, input_age, "Siaya")
+	summary_Agogo$study_site <- "Agogo"
+	summary_Kintampo$study_site <- "Kintampo"	
+	summary_Kombewa$study_site <- "Kombewa"	
+	summary_Nanoro$study_site <- "Nanoro"	
+	summary_Siaya$study_site <- "Siaya"				
+	summary <- rbind(summary_Agogo, summary_Kintampo, summary_Kombewa, summary_Nanoro, summary_Siaya)	
+	summary$locus <- input_locus		
+	return(summary)
+}				
 ```
 
 Make plotting functions.
 
 ```{r plots, include=FALSE}
-match_plot <- function(summary, xlabel) {
+match_plot <- function(summary, facet_by) {
 	summary <- subset(summary, mark_value==1)
 	summary$mark_value <- factor(summary$mark_value)
 	summary$locus <- factor(summary$locus, levels = c("TEP", "Unnamed", "Th2R", "Th3R", "SERA2"))	
 	summary$status <- factor(summary$status)	
-	ggplot(summary, aes(x=status, y=mean, fill=status, color=status)) +
+	p <- ggplot(summary, aes(x=status, y=mean, fill=status, color=status)) +
       geom_bar(position=position_dodge(), stat="identity") +
 	  geom_errorbar(aes(ymin=mean-sd, ymax=mean+sd), width=.2, position=position_dodge(.9)) +      
-      xlab(xlabel) +
+      xlab("Match") +
       ylab("Proportion") +
 	  scale_fill_manual(values=c(light_blue, light_yellow), labels=c("Placebo", "Vaccine")) +
 	  scale_color_manual(values=c(dark_blue, dark_yellow), guide=FALSE) +
@@ -101,49 +120,162 @@ match_plot <- function(summary, xlabel) {
 	  facet_wrap(~ locus, scales="free") +
 	  theme_bw() +
       theme(legend.position = c(1, 0), legend.justification = c(1, 0))
+	return(p)
 }
 
-hamming_plot <- function(summary, xlabel) {
+match_plot_sites <- function(summary, facet_by) {
+	summary <- subset(summary, mark_value==1)
 	summary$mark_value <- factor(summary$mark_value)
-	summary$locus <- factor(summary$locus, levels = c("TEP", "Unnamed", "Th2R", "Th3R", "SERA2"))	
-	summary$status <- factor(summary$status)
-	ggplot(summary, aes(x=mark_value, y=mean, fill=status, color=status)) +
+	summary$locus <- factor(summary$locus, levels = c("TEP", "Unnamed", "Th2R", "Th3R", "SERA2"))
+	summary$study_site <- factor(summary$study_site, levels = c("Agogo", "Kintampo", "Kombewa", "Nanoro", "Siaya"))		
+	summary$status <- factor(summary$status)	
+	p <- ggplot(summary, aes(x=status, y=mean, fill=status, color=status)) +
       geom_bar(position=position_dodge(), stat="identity") +
 	  geom_errorbar(aes(ymin=mean-sd, ymax=mean+sd), width=.2, position=position_dodge(.9)) +      
-      xlab(xlabel) +
+      xlab("Match") +
       ylab("Proportion") +
 	  scale_fill_manual(values=c(light_blue, light_yellow), labels=c("Placebo", "Vaccine")) +
 	  scale_color_manual(values=c(dark_blue, dark_yellow), guide=FALSE) +
-	  facet_wrap(~ locus, scales="free") +
+	  geom_text(aes(x=status, y=mean, ymax=mean, label=paste(round(mean*100,1),"%",sep="")), color="black", vjust=2.2, position = position_dodge(width=0.9)) +
+	  scale_x_discrete(labels=c("")) +
+	  facet_wrap(~ study_site, scales="free") + 
+	  theme_bw() +
+      theme(legend.position = c(1, 0), legend.justification = c(1, 0))
+	return(p)
+}
+
+hamming_plot <- function(summary) {
+	summary$mark_value <- factor(summary$mark_value)
+	summary$locus <- factor(summary$locus, levels = c("TEP", "Unnamed", "Th2R", "Th3R", "SERA2"))	
+	summary$status <- factor(summary$status)
+	p <- ggplot(summary, aes(x=mark_value, y=mean, fill=status, color=status)) +
+      geom_bar(position=position_dodge(), stat="identity") +
+	  geom_errorbar(aes(ymin=mean-sd, ymax=mean+sd), width=.2, position=position_dodge(.9)) +      
+      xlab("Hamming distance") +
+      ylab("Proportion") +
+	  scale_fill_manual(values=c(light_blue, light_yellow), labels=c("Placebo", "Vaccine")) +
+	  scale_color_manual(values=c(dark_blue, dark_yellow), guide=FALSE) +
+	  facet_wrap(~ locus, scales="free") + 	  
       theme_bw() +
       theme(legend.position = c(1, 0), legend.justification = c(1, 0))      
+	return(p)
+}
+
+hamming_plot_sites <- function(summary) {
+	summary$mark_value <- factor(summary$mark_value)
+	summary$locus <- factor(summary$locus, levels = c("TEP", "Unnamed", "Th2R", "Th3R", "SERA2"))	
+	summary$study_site <- factor(summary$study_site, levels = c("Agogo", "Kintampo", "Kombewa", "Nanoro", "Siaya"))			
+	summary$status <- factor(summary$status)
+	p <- ggplot(summary, aes(x=mark_value, y=mean, fill=status, color=status)) +
+      geom_bar(position=position_dodge(), stat="identity") +
+	  geom_errorbar(aes(ymin=mean-sd, ymax=mean+sd), width=.2, position=position_dodge(.9)) +      
+      xlab("Hamming distance") +
+      ylab("Proportion") +
+	  scale_fill_manual(values=c(light_blue, light_yellow), labels=c("Placebo", "Vaccine")) +
+	  scale_color_manual(values=c(dark_blue, dark_yellow), guide=FALSE) +
+	  facet_wrap(~ study_site, scales="free") + 	  
+      theme_bw() +
+      theme(legend.position = c(1, 0), legend.justification = c(1, 0))      
+	return(p)
 }
 ```
 
 ## Clinical
 
-### Match vs mismatch
+### Match, 6-12 weeks
 
-```{r match-c, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE}
-match_plot(average_counts(marks_data_c, "match_3D7"), "Match")
+```{r match-newborn-c, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE}
+match_plot(average_counts(marks_data_c, "match_3D7", "6-12 weeks"))
 ```
 
-### Hamming distance
+### Hamming distance, 6-12 weeks
 
-```{r hamming-c, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE}
-hamming_plot(average_counts(marks_data_c, "hamming_3D7"), "Hamming distance")
+```{r hamming-newborn-c, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE}
+hamming_plot(average_counts(marks_data_c, "hamming_3D7", "6-12 weeks"))
+```
+
+### Match, 5-17 months
+
+```{r match-child-c, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE}
+match_plot(average_counts(marks_data_c, "match_3D7", "5-17 months"))
+```
+
+### Hamming distance, 5-17 months
+
+```{r hamming-child-c, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE}
+hamming_plot(average_counts(marks_data_c, "hamming_3D7", "5-17 months"))
+```
+
+### TEP Match by site, 6-12 weeks
+
+```{r match-newborn-sites-c, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE}
+match_plot_sites(average_counts_across_sites(marks_data_c, "TEP", "match_3D7", "6-12 weeks"))
+```
+
+### TEP Hamming distance by site, 6-12 weeks
+
+```{r hamming-newborn-sites-c, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE}
+hamming_plot_sites(average_counts_across_sites(marks_data_c, "TEP", "hamming_3D7", "6-12 weeks"))
+```
+
+### TEP Match by site, 5-17 months
+
+```{r match-infant-sites-c, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE}
+match_plot_sites(average_counts_across_sites(marks_data_c, "TEP", "match_3D7", "5-17 months"))
+```
+
+### TEP Hamming distance by site, 5-17 months
+
+```{r hamming-infant-sites-c, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE}
+hamming_plot_sites(average_counts_across_sites(marks_data_c, "TEP", "hamming_3D7", "5-17 months"))
 ```
 
 ## Cross-sectional
 
-### Match vs mismatch
+### Match, 6-12 weeks
 
-```{r match-x, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE}
-match_plot(average_counts(marks_data_x, "match_3D7"), "Match")
+```{r match-newborn-x, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE}
+match_plot(average_counts(marks_data_x, "match_3D7", "6-12 weeks"))
 ```
 
-### Hamming distance
+### Hamming distance, 6-12 weeks
 
-```{r hamming-x, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE}
-hamming_plot(average_counts(marks_data_x, "hamming_3D7"), "Hamming distance")
+```{r hamming-newborn-x, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE}
+hamming_plot(average_counts(marks_data_x, "hamming_3D7", "6-12 weeks"))
+```
+
+### Match, 5-17 months
+
+```{r match-infant-x, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE}
+match_plot(average_counts(marks_data_x, "match_3D7", "5-17 months"))
+```
+
+### Hamming distance, 5-17 months
+
+```{r hamming-infant-x, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE}
+hamming_plot(average_counts(marks_data_x, "hamming_3D7", "5-17 months"))
+```
+
+### TEP Match by site, 6-12 weeks
+
+```{r match-newborn-sites-x, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE}
+match_plot_sites(average_counts_across_sites(marks_data_x, "TEP", "match_3D7", "6-12 weeks"))
+```
+
+### TEP Hamming distance by site, 6-12 weeks
+
+```{r hamming-newborn-sites-x, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE}
+hamming_plot_sites(average_counts_across_sites(marks_data_x, "TEP", "hamming_3D7", "6-12 weeks"))
+```
+
+### TEP Match by site, 5-17 months
+
+```{r match-infant-sites-x, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE}
+match_plot_sites(average_counts_across_sites(marks_data_x, "TEP", "match_3D7", "5-17 months"))
+```
+
+### TEP Hamming distance by site, 5-17 months
+
+```{r hamming-infant-sites-x, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE}
+hamming_plot_sites(average_counts_across_sites(marks_data_x, "TEP", "hamming_3D7", "5-17 months"))
 ```
