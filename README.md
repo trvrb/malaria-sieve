@@ -95,4 +95,5 @@ python scripts/append-site-specific-match.py SERA2 > qdata/sequences/SERA2_sites
 
 ## Descriptive statistics of genotype data
 
+* [Code for genotype analysis](descriptive-analysis/descriptive-analysis.Rmd)
 * [Results of genotype analysis](descriptive-analysis/descriptive-analysis.md)
