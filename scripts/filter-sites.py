@@ -53,13 +53,14 @@ def get_filtered_sites(data, start, end, threshold):
 	"""Filter sites"""
 	sites = set()
 	for index in range(start, end+1):
-		(match_count, mismatch_count) = count_match_mismatch(data, index)
-#		print str(index) + "\t" + str(match_count) + "\t" + str(mismatch_count) + "\t"			
+		(match_count, mismatch_count) = count_match_mismatch(data, index)	
 		if match_count < mismatch_count:
 			if match_count >= threshold:		
+				print str(index) + "\t" + str(match_count) + "\t" + str(mismatch_count) + "\t"					
 				sites.add(index)
 		if mismatch_count < match_count:
 			if mismatch_count >= threshold:		
+				print str(index) + "\t" + str(match_count) + "\t" + str(mismatch_count) + "\t"					
 				sites.add(index)
 	return sites
 	
@@ -107,7 +108,7 @@ def main(argv):
 	
 	print "locus\tsite\tcohort\taa"
 
-	for locus in ["TEP", "SERA2"]:
+	for locus in ["SERA2"]:
 		for site_group in ["5 Major Pooled", "11 Pooled"]:
 			for cohort in ["6-12 Weeks", "5-17 Months"]:		
 				subset = subset_data(data, locus, site_map[site_group], cohort)
