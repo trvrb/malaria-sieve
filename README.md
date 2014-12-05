@@ -12,10 +12,10 @@
 
 1. TEP
 2. CST3
-3. Th2R
-4. Th3R
-5. Unnamed
-6. LD
+3. Th2R (17 residues in length, starts at site 311)
+4. Th3R (12 residues in length, starts at site 352)
+5. Unnamed (12 residues in length, starts at site 294)
+6. Th2R+Th3R Linkage
 
 ### CSP repeats
 
