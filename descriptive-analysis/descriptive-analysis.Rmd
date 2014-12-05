@@ -5,7 +5,7 @@
 Set global variables and load packages and functions.
 
 ```{r setup, include=FALSE}
-replicate_count = 3
+replicate_count = 50
 
 require(ggplot2)
 require(plyr)
@@ -253,8 +253,6 @@ age = "6-12 weeks"
 site = "5 major pooled"
 summary = average_counts_locus(marks_data_c, "NA", "multiplicity", age)
 moi_plot(summary, endpoint, age, site)
-filename = "plotDescriptive_moi_endpoint=C_age=6-12weeks_site=5majorpooled.pdf"
-ggsave(file=paste("export/", filename, ".pdf", sep=""))
 ```
 
 ```{r moi-infant-c, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE, dev=c('png', 'pdf'), fig.cap='Descriptive plot of multiplicity'}
@@ -263,8 +261,6 @@ age = "5-17 months"
 site = "5 major pooled"
 summary = average_counts_locus(marks_data_c, "NA", "multiplicity", age)
 moi_plot(summary, endpoint, age, site)
-filename = "plotDescriptive_moi_endpoint=C_age=5-17months_site=5majorpooled.pdf"
-ggsave(file=paste("export/", filename, ".pdf", sep=""))
 ```
 
 ```{r match-newborn-c, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE, dev=c('png', 'pdf'), fig.cap='Descriptive plot of match to 3D7 in C-terminus CSP'}
@@ -273,8 +269,6 @@ age = "6-12 weeks"
 site = "5 major pooled"
 summary = average_counts(marks_data_c, "match_3D7", age)
 match_plot(summary, endpoint, age, site)
-filename = "plotDescriptive_match_across_loci_endpoint=C_age=6-12weeks_site=5majorpooled.pdf"
-ggsave(file=paste("export/", filename, ".pdf", sep=""))
 ```
 
 ```{r hamming-newborn-c, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE, dev=c('png', 'pdf'), fig.cap='Descriptive plot of Hamming distance to 3D7 in C-terminus CSP'}
@@ -283,8 +277,6 @@ age = "6-12 weeks"
 site = "5 major pooled"
 summary = average_counts(marks_data_c, "hamming_3D7", age)
 hamming_plot(summary, endpoint, age, site)
-filename = "plotDescriptive_hamming_across_loci_endpoint=C_age=6-12weeks_site=5majorpooled.pdf"
-ggsave(file=paste("export/", filename, ".pdf", sep=""))
 ```
 
 ```{r match-infant-c, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE, dev=c('png', 'pdf'), fig.cap='Descriptive plot of match to 3D7 in C-terminus CSP'}
@@ -293,8 +285,6 @@ age = "5-17 months"
 site = "5 major pooled"
 summary = average_counts(marks_data_c, "match_3D7", age)
 match_plot(summary, endpoint, age, site)
-filename = "plotDescriptive_match_across_loci_endpoint=C_age=5-17months_site=5majorpooled.pdf"
-ggsave(file=paste("export/", filename, ".pdf", sep=""))
 ```
 
 ```{r hamming-infant-c, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE, dev=c('png', 'pdf'), fig.cap='Descriptive plot of Hamming distance to 3D7 in C-terminus CSP'}
@@ -303,8 +293,6 @@ age = "5-17 months"
 site = "5 major pooled"
 summary = average_counts(marks_data_c, "hamming_3D7", age)
 hamming_plot(summary, endpoint, age, site)
-filename = "plotDescriptive_hamming_across_loci_endpoint=C_age=5-17months_site=5majorpooled.pdf"
-ggsave(file=paste("export/", filename, ".pdf", sep=""))
 ```
 
 ```{r match-newborn-sites-c, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE, dev=c('png', 'pdf'), fig.cap='Descriptive plot of match to 3D7 in C-terminus CSP'}
@@ -313,8 +301,6 @@ locus = "TEP"
 age = "6-12 weeks"
 summary = average_counts_across_sites(marks_data_c, locus, "match_3D7", age)
 match_plot_sites(summary, endpoint, locus, age)
-filename = "plotDescriptive_match_across_sites_endpoint=C_locus=TEP_age=6-12weeks"
-ggsave(file=paste("export/", filename, ".pdf", sep=""))
 ```
 
 ```{r hamming-newborn-sites-c, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE, dev=c('png', 'pdf'), fig.cap='Descriptive plot of Hamming distance to 3D7 in C-terminus CSP'}
@@ -323,8 +309,6 @@ locus = "TEP"
 age = "6-12 weeks"
 summary = average_counts_across_sites(marks_data_c, locus, "hamming_3D7", age)
 hamming_plot_sites(summary, endpoint, locus, age)
-filename = "plotDescriptive_hamming_across_sites_endpoint=C_locus=TEP_age=6-12weeks"
-ggsave(file=paste("export/", filename, ".pdf", sep=""))
 ```
 
 ```{r match-infant-sites-c, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE, dev=c('png', 'pdf'), fig.cap='Descriptive plot of match to 3D7 in C-terminus CSP'}
@@ -333,8 +317,6 @@ locus = "TEP"
 age = "5-17 months"
 summary = average_counts_across_sites(marks_data_c, locus, "match_3D7", age)
 match_plot_sites(summary, endpoint, locus, age)
-filename = "plotDescriptive_match_across_sites_endpoint=C_locus=TEP_age=5-17months"
-ggsave(file=paste("export/", filename, ".pdf", sep=""))
 ```
 
 ```{r hamming-infant-sites-c, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE, dev=c('png', 'pdf'), fig.cap='Descriptive plot of Hamming distance to 3D7 in C-terminus CSP'}
@@ -343,8 +325,6 @@ locus = "TEP"
 age = "5-17 months"
 summary = average_counts_across_sites(marks_data_c, locus, "hamming_3D7", age)
 hamming_plot_sites(summary, endpoint, locus, age)
-filename = "plotDescriptive_hamming_across_sites_endpoint=C_locus=TEP_age=5-17months"
-ggsave(file=paste("export/", filename, ".pdf", sep=""))
 ```
 
 ```{r bep-match-newborn-c, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE, dev=c('png', 'pdf'), fig.cap='Descriptive plot of match to 3D7 in NANP repeat region'}
@@ -353,8 +333,6 @@ age = "6-12 weeks"
 site = "5 major pooled"
 summary = average_counts_locus(marks_data_c, "BEP", "match_3D7", age)
 bep_match_plot(summary, endpoint, age, site)
-filename = "plotDescriptive_match_bep_endpoint=C_age=6-12weeks_site=5majorpooled"
-ggsave(file=paste("export/", filename, ".pdf", sep=""))
 ```
 
 ```{r bep-match-infact-c, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE, dev=c('png', 'pdf'), fig.cap='Descriptive plot of match to 3D7 in NANP repeat region'}
@@ -363,8 +341,6 @@ age = "5-17 months"
 site = "5 major pooled"
 summary = average_counts_locus(marks_data_c, "BEP", "match_3D7", age)
 bep_match_plot(summary, endpoint, age, site)
-filename = "plotDescriptive_match_bep_endpoint=C_age=5-17months_site=5majorpooled"
-ggsave(file=paste("export/", filename, ".pdf", sep=""))
 ```
 
 ```{r bep-hist-newborn-c, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE, dev=c('png', 'pdf'), fig.cap='Descriptive plot of NANP repeat distribution'}
@@ -373,8 +349,6 @@ age = "6-12 weeks"
 site = "5 major pooled"
 summary = average_counts_locus(marks_data_c, "BEP", "repeat_count", age)
 bep_hist_plot(summary, endpoint, age, site)
-filename = "plotDescriptive_hist_bep_endpoint=X_age=6-12weeks_site=5majorpooled"
-ggsave(file=paste("export/", filename, ".pdf", sep=""))
 ```
 
 ```{r bep-hist-infant-c, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE, dev=c('png', 'pdf'), fig.cap='Descriptive plot of NANP repeat distribution'}
@@ -383,8 +357,6 @@ age = "5-17 months"
 site = "5 major pooled"
 summary = average_counts_locus(marks_data_c, "BEP", "repeat_count", age)
 bep_hist_plot(summary, endpoint, age, site)
-filename = "plotDescriptive_hist_bep_endpoint=X_age=5-17months_site=5majorpooled"
-ggsave(file=paste("export/", filename, ".pdf", sep=""))
 ```
 
 ```{r moi-newborn-x, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE, dev=c('png', 'pdf'), fig.cap='Descriptive plot of multiplicity'}
@@ -393,8 +365,6 @@ age = "6-12 weeks"
 site = "5 major pooled"
 summary = average_counts_locus(marks_data_x, "NA", "multiplicity", age)
 moi_plot(summary, endpoint, age, site)
-filename = "plotDescriptive_moi_endpoint=X_age=6-12weeks_site=5majorpooled"
-ggsave(file=paste("export/", filename, ".pdf", sep=""))
 ```
 
 ```{r moi-infant-x, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE, dev=c('png', 'pdf'), fig.cap='Descriptive plot of multiplicity'}
@@ -403,8 +373,6 @@ age = "5-17 months"
 site = "5 major pooled"
 summary = average_counts_locus(marks_data_x, "NA", "multiplicity", age)
 moi_plot(summary, endpoint, age, site)
-filename = "plotDescriptive_moi_endpoint=X_age=5-17months_site=5majorpooled"
-ggsave(file=paste("export/", filename, ".pdf", sep=""))
 ```
 
 ```{r match-newborn-x, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE, dev=c('png', 'pdf'), fig.cap='Descriptive plot of match to 3D7 in C-terminus CSP'}
@@ -413,8 +381,6 @@ age = "6-12 weeks"
 site = "5 major pooled"
 summary = average_counts(marks_data_x, "match_3D7", age)
 match_plot(summary, endpoint, age, site)
-filename = "plotDescriptive_match_across_loci_endpoint=X_age=6-12weeks_site=5majorpooled"
-ggsave(file=paste("export/", filename, ".pdf", sep=""))
 ```
 
 ```{r hamming-newborn-x, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE, dev=c('png', 'pdf'), fig.cap='Descriptive plot of Hamming distance to 3D7 in C-terminus CSP'}
@@ -423,8 +389,6 @@ age = "6-12 weeks"
 site = "5 major pooled"
 summary = average_counts(marks_data_x, "hamming_3D7", age)
 hamming_plot(summary, endpoint, age, site)
-filename = "plotDescriptive_hamming_across_loci_endpoint=X_age=6-12weeks_site=5majorpooled"
-ggsave(file=paste("export/", filename, ".pdf", sep=""))
 ```
 
 ```{r match-infant-x, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE, dev=c('png', 'pdf'), fig.cap='Descriptive plot of match to 3D7 in C-terminus CSP'}
@@ -433,8 +397,6 @@ age = "5-17 months"
 site = "5 major pooled"
 summary = average_counts(marks_data_x, "match_3D7", age)
 match_plot(summary, endpoint, age, site)
-filename = "plotDescriptive_match_across_loci_endpoint=X_age=5-17months_site=5majorpooled"
-ggsave(file=paste("export/", filename, ".pdf", sep=""))
 ```
 
 ```{r hamming-infant-x, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE, dev=c('png', 'pdf'), fig.cap='Descriptive plot of Hamming distance to 3D7 in C-terminus CSP'}
@@ -443,8 +405,6 @@ age = "5-17 months"
 site = "5 major pooled"
 summary = average_counts(marks_data_x, "hamming_3D7", age)
 hamming_plot(summary, endpoint, age, site)
-filename = "plotDescriptive_hamming_across_loci_endpoint=X_age=5-17months_site=5majorpooled"
-ggsave(file=paste("export/", filename, ".pdf", sep=""))
 ```
 
 ```{r match-newborn-sites-x, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE, dev=c('png', 'pdf'), fig.cap='Descriptive plot of match to 3D7 in C-terminus CSP'}
@@ -453,8 +413,6 @@ locus = "TEP"
 age = "6-12 weeks"
 summary = average_counts_across_sites(marks_data_x, locus, "match_3D7", age)
 match_plot_sites(summary, endpoint, locus, age)
-filename = "plotDescriptive_match_across_sites_endpoint=X_locus=TEP_age=6-12weeks"
-ggsave(file=paste("export/", filename, ".pdf", sep=""))
 ```
 
 ```{r hamming-newborn-sites-x, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE, dev=c('png', 'pdf'), fig.cap='Descriptive plot of Hamming distance to 3D7 in C-terminus CSP'}
@@ -463,8 +421,6 @@ locus = "TEP"
 age = "6-12 weeks"
 summary = average_counts_across_sites(marks_data_x, locus, "hamming_3D7", age)
 hamming_plot_sites(summary, endpoint, locus, age)
-filename = "plotDescriptive_hamming_across_sites_endpoint=X_locus=TEP_age=6-12weeks"
-ggsave(file=paste("export/", filename, ".pdf", sep=""))
 ```
 
 ```{r match-infant-sites-x, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE, dev=c('png', 'pdf'), fig.cap='Descriptive plot of match to 3D7 in C-terminus CSP'}
@@ -473,8 +429,6 @@ locus = "TEP"
 age = "5-17 months"
 summary = average_counts_across_sites(marks_data_x, locus, "match_3D7", age)
 match_plot_sites(summary, endpoint, locus, age)
-filename = "plotDescriptive_match_across_sites_endpoint=X_locus=TEP_age=5-17months"
-ggsave(file=paste("export/", filename, ".pdf", sep=""))
 ```
 
 ```{r hamming-infant-sites-x, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE, dev=c('png', 'pdf'), fig.cap='Descriptive plot of Hamming distance to 3D7 in C-terminus CSP'}
@@ -483,8 +437,6 @@ locus = "TEP"
 age = "5-17 months"
 summary = average_counts_across_sites(marks_data_x, locus, "hamming_3D7", age)
 hamming_plot_sites(summary, endpoint, locus, age)
-filename = "plotDescriptive_hamming_across_sites_endpoint=X_locus=TEP_age=5-17months"
-ggsave(file=paste("export/", filename, ".pdf", sep=""))
 ```
 
 ```{r bep-match-newborn-x, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE, dev=c('png', 'pdf'), fig.cap='Descriptive plot of match to 3D7 in NANP repeat region'}
@@ -493,8 +445,6 @@ age = "6-12 weeks"
 site = "5 major pooled"
 summary = average_counts_locus(marks_data_c, "BEP", "match_3D7", age)
 bep_match_plot(summary, endpoint, age, site)
-filename = "plotDescriptive_match_bep_endpoint=X_age=6-12weeks_site=5majorpooled"
-ggsave(file=paste("export/", filename, ".pdf", sep=""))
 ```
 
 ```{r bep-match-infact-x, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE, dev=c('png', 'pdf'), fig.cap='Descriptive plot of match to 3D7 in NANP repeat region'}
@@ -503,8 +453,6 @@ age = "5-17 months"
 site = "5 major pooled"
 summary = average_counts_locus(marks_data_c, "BEP", "match_3D7", age)
 bep_match_plot(summary, endpoint, age, site)
-filename = "plotDescriptive_match_bep_endpoint=X_age=5-17months_site=5majorpooled"
-ggsave(file=paste("export/", filename, ".pdf", sep=""))
 ```
 
 ```{r bep-hist-newborn-x, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE, dev=c('png', 'pdf'), fig.cap='Descriptive plot of NANP repeat distribution'}
@@ -513,8 +461,6 @@ age = "6-12 weeks"
 site = "5 major pooled"
 summary = average_counts_locus(marks_data_x, "BEP", "repeat_count", age)
 bep_hist_plot(summary, endpoint, age, site)
-filename = "plotDescriptive_hist_bep_endpoint=X_age=6-12weeks_site=5majorpooled"
-ggsave(file=paste("export/", filename, ".pdf", sep=""))
 ```
 
 ```{r bep-hist-infant-x, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE, dev=c('png', 'pdf'), fig.cap='Descriptive plot of NANP repeat distribution'}
@@ -523,6 +469,4 @@ age = "5-17 months"
 site = "5 major pooled"
 summary = average_counts_locus(marks_data_x, "BEP", "repeat_count", age)
 bep_hist_plot(summary, endpoint, age, site)
-filename = "plotDescriptive_hist_bep_endpoint=X_age=5-17months_site=5majorpooled"
-ggsave(file=paste("export/", filename, ".pdf", sep=""))
 ```
