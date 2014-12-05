@@ -5,7 +5,7 @@
 Set global variables and load packages and functions.
 
 ```{r setup, include=FALSE}
-replicate_count = 50
+replicate_count = 3
 
 require(ggplot2)
 require(plyr)
@@ -245,11 +245,9 @@ bep_hist_plot <- function(summary, endpointLabel, cohortLabel, siteLabel) {
 }
 ```
 
-## Clinical
+## Descriptive plots
 
-### Multiplicity, 6-12 weeks
-
-```{r moi-newborn-c, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE}
+```{r moi-newborn-c, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE, dev=c('png', 'pdf'), fig.cap='Descriptive plot of multiplicity'}
 endpoint = "Clinical Malaria by Month 14"
 age = "6-12 weeks"
 site = "5 major pooled"
@@ -259,9 +257,7 @@ filename = "plotDescriptive_moi_endpoint=C_age=6-12weeks_site=5majorpooled.pdf"
 ggsave(file=paste("export/", filename, ".pdf", sep=""))
 ```
 
-### Multiplicity, 5-17 months
-
-```{r moi-infant-c, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE}
+```{r moi-infant-c, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE, dev=c('png', 'pdf'), fig.cap='Descriptive plot of multiplicity'}
 endpoint = "Clinical Malaria by Month 14"
 age = "5-17 months"
 site = "5 major pooled"
@@ -271,9 +267,7 @@ filename = "plotDescriptive_moi_endpoint=C_age=5-17months_site=5majorpooled.pdf"
 ggsave(file=paste("export/", filename, ".pdf", sep=""))
 ```
 
-### Match, 6-12 weeks
-
-```{r match-newborn-c, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE}
+```{r match-newborn-c, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE, dev=c('png', 'pdf'), fig.cap='Descriptive plot of match to 3D7 in C-terminus CSP'}
 endpoint = "Clinical Malaria by Month 14"
 age = "6-12 weeks"
 site = "5 major pooled"
@@ -283,9 +277,7 @@ filename = "plotDescriptive_match_across_loci_endpoint=C_age=6-12weeks_site=5maj
 ggsave(file=paste("export/", filename, ".pdf", sep=""))
 ```
 
-### Hamming distance, 6-12 weeks
-
-```{r hamming-newborn-c, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE}
+```{r hamming-newborn-c, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE, dev=c('png', 'pdf'), fig.cap='Descriptive plot of Hamming distance to 3D7 in C-terminus CSP'}
 endpoint = "Clinical Malaria by Month 14"
 age = "6-12 weeks"
 site = "5 major pooled"
@@ -295,9 +287,7 @@ filename = "plotDescriptive_hamming_across_loci_endpoint=C_age=6-12weeks_site=5m
 ggsave(file=paste("export/", filename, ".pdf", sep=""))
 ```
 
-### Match, 5-17 months
-
-```{r match-infant-c, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE}
+```{r match-infant-c, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE, dev=c('png', 'pdf'), fig.cap='Descriptive plot of match to 3D7 in C-terminus CSP'}
 endpoint = "Clinical Malaria by Month 14"
 age = "5-17 months"
 site = "5 major pooled"
@@ -307,9 +297,7 @@ filename = "plotDescriptive_match_across_loci_endpoint=C_age=5-17months_site=5ma
 ggsave(file=paste("export/", filename, ".pdf", sep=""))
 ```
 
-### Hamming distance, 5-17 months
-
-```{r hamming-infant-c, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE}
+```{r hamming-infant-c, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE, dev=c('png', 'pdf'), fig.cap='Descriptive plot of Hamming distance to 3D7 in C-terminus CSP'}
 endpoint = "Clinical Malaria by Month 14"
 age = "5-17 months"
 site = "5 major pooled"
@@ -319,9 +307,7 @@ filename = "plotDescriptive_hamming_across_loci_endpoint=C_age=5-17months_site=5
 ggsave(file=paste("export/", filename, ".pdf", sep=""))
 ```
 
-### TEP Match by site, 6-12 weeks
-
-```{r match-newborn-sites-c, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE}
+```{r match-newborn-sites-c, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE, dev=c('png', 'pdf'), fig.cap='Descriptive plot of match to 3D7 in C-terminus CSP'}
 endpoint = "Clinical Malaria by Month 14"
 locus = "TEP"
 age = "6-12 weeks"
@@ -331,9 +317,7 @@ filename = "plotDescriptive_match_across_sites_endpoint=C_locus=TEP_age=6-12week
 ggsave(file=paste("export/", filename, ".pdf", sep=""))
 ```
 
-### TEP Hamming distance by site, 6-12 weeks
-
-```{r hamming-newborn-sites-c, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE}
+```{r hamming-newborn-sites-c, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE, dev=c('png', 'pdf'), fig.cap='Descriptive plot of Hamming distance to 3D7 in C-terminus CSP'}
 endpoint = "Clinical Malaria by Month 14"
 locus = "TEP"
 age = "6-12 weeks"
@@ -343,9 +327,7 @@ filename = "plotDescriptive_hamming_across_sites_endpoint=C_locus=TEP_age=6-12we
 ggsave(file=paste("export/", filename, ".pdf", sep=""))
 ```
 
-### TEP Match by site, 5-17 months
-
-```{r match-infant-sites-c, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE}
+```{r match-infant-sites-c, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE, dev=c('png', 'pdf'), fig.cap='Descriptive plot of match to 3D7 in C-terminus CSP'}
 endpoint = "Clinical Malaria by Month 14"
 locus = "TEP"
 age = "5-17 months"
@@ -355,9 +337,7 @@ filename = "plotDescriptive_match_across_sites_endpoint=C_locus=TEP_age=5-17mont
 ggsave(file=paste("export/", filename, ".pdf", sep=""))
 ```
 
-### TEP Hamming distance by site, 5-17 months
-
-```{r hamming-infant-sites-c, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE}
+```{r hamming-infant-sites-c, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE, dev=c('png', 'pdf'), fig.cap='Descriptive plot of Hamming distance to 3D7 in C-terminus CSP'}
 endpoint = "Clinical Malaria by Month 14"
 locus = "TEP"
 age = "5-17 months"
@@ -367,9 +347,7 @@ filename = "plotDescriptive_hamming_across_sites_endpoint=C_locus=TEP_age=5-17mo
 ggsave(file=paste("export/", filename, ".pdf", sep=""))
 ```
 
-### BEP Match, 6-12 weeks
-
-```{r bep-match-newborn-c, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE}
+```{r bep-match-newborn-c, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE, dev=c('png', 'pdf'), fig.cap='Descriptive plot of match to 3D7 in NANP repeat region'}
 endpoint = "Clinical Malaria by Month 14"
 age = "6-12 weeks"
 site = "5 major pooled"
@@ -379,9 +357,7 @@ filename = "plotDescriptive_match_bep_endpoint=C_age=6-12weeks_site=5majorpooled
 ggsave(file=paste("export/", filename, ".pdf", sep=""))
 ```
 
-### BEP Match, 5-17 months
-
-```{r bep-match-infact-c, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE}
+```{r bep-match-infact-c, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE, dev=c('png', 'pdf'), fig.cap='Descriptive plot of match to 3D7 in NANP repeat region'}
 endpoint = "Clinical Malaria by Month 14"
 age = "5-17 months"
 site = "5 major pooled"
@@ -391,9 +367,7 @@ filename = "plotDescriptive_match_bep_endpoint=C_age=5-17months_site=5majorpoole
 ggsave(file=paste("export/", filename, ".pdf", sep=""))
 ```
 
-### BEP Distribution, 6-12 weeks
-
-```{r bep-hist-newborn-c, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE}
+```{r bep-hist-newborn-c, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE, dev=c('png', 'pdf'), fig.cap='Descriptive plot of NANP repeat distribution'}
 endpoint = "Any Malaria by Month 20"
 age = "6-12 weeks"
 site = "5 major pooled"
@@ -403,9 +377,7 @@ filename = "plotDescriptive_hist_bep_endpoint=X_age=6-12weeks_site=5majorpooled"
 ggsave(file=paste("export/", filename, ".pdf", sep=""))
 ```
 
-### BEP Distribution, 5-17 months
-
-```{r bep-hist-infant-c, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE}
+```{r bep-hist-infant-c, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE, dev=c('png', 'pdf'), fig.cap='Descriptive plot of NANP repeat distribution'}
 endpoint = "Any Malaria by Month 20"
 age = "5-17 months"
 site = "5 major pooled"
@@ -415,11 +387,7 @@ filename = "plotDescriptive_hist_bep_endpoint=X_age=5-17months_site=5majorpooled
 ggsave(file=paste("export/", filename, ".pdf", sep=""))
 ```
 
-## Cross-sectional
-
-### Multiplicity, 6-12 weeks
-
-```{r moi-newborn-x, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE}
+```{r moi-newborn-x, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE, dev=c('png', 'pdf'), fig.cap='Descriptive plot of multiplicity'}
 endpoint = "Any Malaria by Month 20"
 age = "6-12 weeks"
 site = "5 major pooled"
@@ -429,9 +397,7 @@ filename = "plotDescriptive_moi_endpoint=X_age=6-12weeks_site=5majorpooled"
 ggsave(file=paste("export/", filename, ".pdf", sep=""))
 ```
 
-### Multiplicity, 5-17 months
-
-```{r moi-infant-x, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE}
+```{r moi-infant-x, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE, dev=c('png', 'pdf'), fig.cap='Descriptive plot of multiplicity'}
 endpoint = "Any Malaria by Month 20"
 age = "5-17 months"
 site = "5 major pooled"
@@ -441,9 +407,7 @@ filename = "plotDescriptive_moi_endpoint=X_age=5-17months_site=5majorpooled"
 ggsave(file=paste("export/", filename, ".pdf", sep=""))
 ```
 
-### Match, 6-12 weeks
-
-```{r match-newborn-x, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE}
+```{r match-newborn-x, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE, dev=c('png', 'pdf'), fig.cap='Descriptive plot of match to 3D7 in C-terminus CSP'}
 endpoint = "Any Malaria by Month 20"
 age = "6-12 weeks"
 site = "5 major pooled"
@@ -453,9 +417,7 @@ filename = "plotDescriptive_match_across_loci_endpoint=X_age=6-12weeks_site=5maj
 ggsave(file=paste("export/", filename, ".pdf", sep=""))
 ```
 
-### Hamming distance, 6-12 weeks
-
-```{r hamming-newborn-x, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE}
+```{r hamming-newborn-x, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE, dev=c('png', 'pdf'), fig.cap='Descriptive plot of Hamming distance to 3D7 in C-terminus CSP'}
 endpoint = "Any Malaria by Month 20"
 age = "6-12 weeks"
 site = "5 major pooled"
@@ -465,9 +427,7 @@ filename = "plotDescriptive_hamming_across_loci_endpoint=X_age=6-12weeks_site=5m
 ggsave(file=paste("export/", filename, ".pdf", sep=""))
 ```
 
-### Match, 5-17 months
-
-```{r match-infant-x, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE}
+```{r match-infant-x, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE, dev=c('png', 'pdf'), fig.cap='Descriptive plot of match to 3D7 in C-terminus CSP'}
 endpoint = "Any Malaria by Month 20"
 age = "5-17 months"
 site = "5 major pooled"
@@ -477,9 +437,7 @@ filename = "plotDescriptive_match_across_loci_endpoint=X_age=5-17months_site=5ma
 ggsave(file=paste("export/", filename, ".pdf", sep=""))
 ```
 
-### Hamming distance, 5-17 months
-
-```{r hamming-infant-x, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE}
+```{r hamming-infant-x, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE, dev=c('png', 'pdf'), fig.cap='Descriptive plot of Hamming distance to 3D7 in C-terminus CSP'}
 endpoint = "Any Malaria by Month 20"
 age = "5-17 months"
 site = "5 major pooled"
@@ -489,9 +447,7 @@ filename = "plotDescriptive_hamming_across_loci_endpoint=X_age=5-17months_site=5
 ggsave(file=paste("export/", filename, ".pdf", sep=""))
 ```
 
-### TEP Match by site, 6-12 weeks
-
-```{r match-newborn-sites-x, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE}
+```{r match-newborn-sites-x, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE, dev=c('png', 'pdf'), fig.cap='Descriptive plot of match to 3D7 in C-terminus CSP'}
 endpoint = "Any Malaria by Month 20"
 locus = "TEP"
 age = "6-12 weeks"
@@ -501,9 +457,7 @@ filename = "plotDescriptive_match_across_sites_endpoint=X_locus=TEP_age=6-12week
 ggsave(file=paste("export/", filename, ".pdf", sep=""))
 ```
 
-### TEP Hamming distance by site, 6-12 weeks
-
-```{r hamming-newborn-sites-x, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE}
+```{r hamming-newborn-sites-x, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE, dev=c('png', 'pdf'), fig.cap='Descriptive plot of Hamming distance to 3D7 in C-terminus CSP'}
 endpoint = "Any Malaria by Month 20"
 locus = "TEP"
 age = "6-12 weeks"
@@ -513,9 +467,7 @@ filename = "plotDescriptive_hamming_across_sites_endpoint=X_locus=TEP_age=6-12we
 ggsave(file=paste("export/", filename, ".pdf", sep=""))
 ```
 
-### TEP Match by site, 5-17 months
-
-```{r match-infant-sites-x, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE}
+```{r match-infant-sites-x, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE, dev=c('png', 'pdf'), fig.cap='Descriptive plot of match to 3D7 in C-terminus CSP'}
 endpoint = "Any Malaria by Month 20"
 locus = "TEP"
 age = "5-17 months"
@@ -525,9 +477,7 @@ filename = "plotDescriptive_match_across_sites_endpoint=X_locus=TEP_age=5-17mont
 ggsave(file=paste("export/", filename, ".pdf", sep=""))
 ```
 
-### TEP Hamming distance by site, 5-17 months
-
-```{r hamming-infant-sites-x, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE}
+```{r hamming-infant-sites-x, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE, dev=c('png', 'pdf'), fig.cap='Descriptive plot of Hamming distance to 3D7 in C-terminus CSP'}
 endpoint = "Any Malaria by Month 20"
 locus = "TEP"
 age = "5-17 months"
@@ -537,9 +487,7 @@ filename = "plotDescriptive_hamming_across_sites_endpoint=X_locus=TEP_age=5-17mo
 ggsave(file=paste("export/", filename, ".pdf", sep=""))
 ```
 
-### BEP Match, 6-12 weeks
-
-```{r bep-match-newborn-x, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE}
+```{r bep-match-newborn-x, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE, dev=c('png', 'pdf'), fig.cap='Descriptive plot of match to 3D7 in NANP repeat region'}
 endpoint = "Any Malaria by Month 20"
 age = "6-12 weeks"
 site = "5 major pooled"
@@ -549,9 +497,7 @@ filename = "plotDescriptive_match_bep_endpoint=X_age=6-12weeks_site=5majorpooled
 ggsave(file=paste("export/", filename, ".pdf", sep=""))
 ```
 
-### BEP Match, 5-17 months
-
-```{r bep-match-infact-x, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE}
+```{r bep-match-infact-x, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE, dev=c('png', 'pdf'), fig.cap='Descriptive plot of match to 3D7 in NANP repeat region'}
 endpoint = "Any Malaria by Month 20"
 age = "5-17 months"
 site = "5 major pooled"
@@ -561,9 +507,7 @@ filename = "plotDescriptive_match_bep_endpoint=X_age=5-17months_site=5majorpoole
 ggsave(file=paste("export/", filename, ".pdf", sep=""))
 ```
 
-### BEP Distribution, 6-12 weeks
-
-```{r bep-hist-newborn-x, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE}
+```{r bep-hist-newborn-x, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE, dev=c('png', 'pdf'), fig.cap='Descriptive plot of NANP repeat distribution'}
 endpoint = "Any Malaria by Month 20"
 age = "6-12 weeks"
 site = "5 major pooled"
@@ -573,9 +517,7 @@ filename = "plotDescriptive_hist_bep_endpoint=X_age=6-12weeks_site=5majorpooled"
 ggsave(file=paste("export/", filename, ".pdf", sep=""))
 ```
 
-### BEP Distribution, 5-17 months
-
-```{r bep-hist-infant-x, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE}
+```{r bep-hist-infant-x, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE, dev=c('png', 'pdf'), fig.cap='Descriptive plot of NANP repeat distribution'}
 endpoint = "Any Malaria by Month 20"
 age = "5-17 months"
 site = "5 major pooled"
