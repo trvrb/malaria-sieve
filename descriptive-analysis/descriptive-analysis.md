@@ -83,3 +83,31 @@ Make plotting functions.
 ![Descriptive plot of NANP repeat distribution](figures/bep-hist-newborn-x-1.png) 
 
 ![Descriptive plot of NANP repeat distribution](figures/bep-hist-infant-x-1.png) 
+
+## Residue-specific setup
+
+Load marks file.
+
+
+
+Subset to just the 5 major sites.
+
+
+
+Collect summary across residues
+
+
+
+Plot residue-specific match
+
+
+
+## Residue-specific descriptive plots
+
+![Descriptive plot of match to 3D7 in C-terminus CSP](figures/residue-specific-match-newborn-c-1.png) 
+
+![Descriptive plot of match to 3D7 in C-terminus CSP](figures/residue-specific-match-infant-c-1.png) 
+
+![Descriptive plot of match to 3D7 in C-terminus CSP](figures/residue-specific-match-newborn-x-1.png) 
+
+![Descriptive plot of match to 3D7 in C-terminus CSP](figures/residue-specific-match-infant-x-1.png) 

@@ -470,3 +470,100 @@ site = "5 major pooled"
 summary = average_counts_locus(marks_data_x, "BEP", "repeat_count", age)
 bep_hist_plot(summary, endpoint, age, site)
 ```
+
+## Residue-specific setup
+
+Load marks file.
+
+```{r load_residues, include=FALSE}
+marks_data_c = read.table("../adata/marks_data_c_sites.tsv", header = TRUE, sep = '\t', na.strings = "NULL")
+marks_data_x = read.table("../adata/marks_data_x_sites.tsv", header = TRUE, sep = '\t', na.strings = "NULL")
+```
+
+Subset to just the 5 major sites.
+
+```{r initial_subset_residues, include=FALSE}
+marks_data_c <- subset(marks_data_c, study_site == "Agogo" || study_site == "Kintampo" || study_site == "Kombewa" || study_site == "Nanoro" || study_site == "Siaya")
+marks_data_x <- subset(marks_data_x, study_site == "Agogo" || study_site == "Kintampo" || study_site == "Kombewa" || study_site == "Nanoro" || study_site == "Siaya")
+```
+
+Collect summary across residues
+
+```{r summarize_residues, include=FALSE}
+residues_TEP = c("294","295","296","298","299","301","302","303","305","314","317","318","320","321","322","324","327","349","352","354","355","356","357","359","361")
+residues_SERA2 = c("48","51","52","53","54","55","56","57","65","68","88","90","91","92","93","94","95")
+
+average_counts_across_residues <- function(marks_data, input_locus, input_age, residues) {
+	summary <- NULL
+	for (residue in residues) {
+		mark = paste("match_3D7_", residue, sep="")
+		subsetted = subset(marks_data, mark_name == mark)
+		summary_residue <- average_counts_locus(subsetted, input_locus, mark, input_age)
+		summary_residue$residue <- residue			
+		summary <- rbind(summary, summary_residue)				
+	}	
+	return(summary)
+}	
+```
+
+Plot residue-specific match
+
+```{r plots_residues, include=FALSE}
+match_plot_residues <- function(summary, endpointLabel, cohortLabel, siteLabel) {
+	summary <- subset(summary, mark_value==1)
+	summary$mark_value <- factor(summary$mark_value)
+	summary$residue <- factor(summary$residue)	
+	summary$status <- factor(summary$status)
+	title = paste("Match to 3D7 across residues\nEndpoint:", endpointLabel, "\nAge Cohort:", cohortLabel, "\nSite:", siteLabel)
+	p <- ggplot(summary, aes(x=status, y=mean, fill=status, color=status)) +
+      geom_point(position=position_dodge(), stat="identity") +
+	  geom_errorbar(aes(ymin=mean-sd, ymax=mean+sd), width=.2, position=position_dodge(.9)) +      
+      xlab("Match") +
+      ylab("Proportion") +
+	  scale_fill_manual(values=c(blue, yellow), labels=c("Placebo", "Vaccine"), guide=FALSE) +
+	  scale_color_manual(values=c(blue, yellow), labels=c("Placebo", "Vaccine")) +
+	  scale_x_discrete(labels=c(""), drop=FALSE) +
+	  facet_wrap(~ residue, scales="free") +
+	  theme_bw() +
+      ggtitle(title)   	  	  
+	return(p)
+}
+```
+
+## Residue-specific descriptive plots
+
+```{r residue-specific-match-newborn-c, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE, dev=c('png', 'pdf'), fig.cap='Descriptive plot of match to 3D7 in C-terminus CSP'}
+endpoint = "Clinical Malaria by Month 14"
+age = "6-12 weeks"
+site = "5 major pooled"
+subsetted = subset(marks_data_c, locus == "TEP")
+summary = average_counts_across_residues(subsetted, "TEP", age, residues_TEP)
+match_plot_residues(summary, endpoint, age, site)
+```
+
+```{r residue-specific-match-infant-c, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE, dev=c('png', 'pdf'), fig.cap='Descriptive plot of match to 3D7 in C-terminus CSP'}
+endpoint = "Clinical Malaria by Month 14"
+age = "5-17 months"
+site = "5 major pooled"
+subsetted = subset(marks_data_c, locus == "TEP")
+summary = average_counts_across_residues(subsetted, "TEP", age, residues_TEP)
+match_plot_residues(summary, endpoint, age, site)
+```
+
+```{r residue-specific-match-newborn-x, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE, dev=c('png', 'pdf'), fig.cap='Descriptive plot of match to 3D7 in C-terminus CSP'}
+endpoint = "Any Malaria by Month 20"
+age = "6-12 weeks"
+site = "5 major pooled"
+subsetted = subset(marks_data_x, locus == "TEP")
+summary = average_counts_across_residues(subsetted, "TEP", age, residues_TEP)
+match_plot_residues(summary, endpoint, age, site)
+```
+
+```{r residue-specific-match-infant-x, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE, dev=c('png', 'pdf'), fig.cap='Descriptive plot of match to 3D7 in C-terminus CSP'}
+endpoint = "Any Malaria by Month 20"
+age = "5-17 months"
+site = "5 major pooled"
+subsetted = subset(marks_data_x, locus == "TEP")
+summary = average_counts_across_residues(subsetted, "TEP", age, residues_TEP)
+match_plot_residues(summary, endpoint, age, site)
+```
