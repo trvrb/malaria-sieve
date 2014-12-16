@@ -62,13 +62,15 @@ def collect_data(subjects, seq_data, matched_samples):
 	locus_reader = csv.DictReader(open("qdata/sequences/" + locus + ".tsv"), delimiter='\t')		# list of dicts
 	for line in locus_reader:
 		subject = line['subject'] + "\t" + line['sample']
-		if line['sample'] in matched_samples:		
-			all_subjects.append(subject)
-			if (subject, locus) in seq_data:
-				seq_data[(subject, locus)].append(line)
-			else:
-				seq_data[(subject, locus)] = []
-				seq_data[(subject, locus)].append(line)			
+		read_count = int(line['reads'])
+		if read_count >= 20:
+			if line['sample'] in matched_samples:		
+				all_subjects.append(subject)
+				if (subject, locus) in seq_data:
+					seq_data[(subject, locus)].append(line)
+				else:
+					seq_data[(subject, locus)] = []
+					seq_data[(subject, locus)].append(line)			
 	unique_subjects = set(all_subjects)		
 	subjects.extend(list(unique_subjects))
 	
