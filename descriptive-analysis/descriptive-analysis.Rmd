@@ -209,7 +209,7 @@ hamming_plot_sites <- function(summary, endpointLabel, locusLabel, cohortLabel) 
 	return(p)
 }
 
-bep_match_plot <- function(summary, endpointLabel, cohortLabel, siteLabel) {
+bep_cat_plot <- function(summary, endpointLabel, cohortLabel, siteLabel) {
 	summary <- subset(summary, mark_value==1)
 	summary$mark_value <- factor(summary$mark_value)
 	summary$status <- factor(summary$status)
@@ -217,7 +217,7 @@ bep_match_plot <- function(summary, endpointLabel, cohortLabel, siteLabel) {
 	p <- ggplot(summary, aes(x=status, y=mean, fill=status, color=status)) +
       geom_bar(position=position_dodge(), stat="identity") +
 	  geom_errorbar(aes(ymin=mean-sd, ymax=mean+sd), width=.2, position=position_dodge(.9)) +      
-      xlab("Match") +
+      xlab("37-39 NANP repeats") +
       ylab("Proportion") +
 	  scale_fill_manual(values=c(light_blue, light_yellow), labels=c("Placebo", "Vaccine")) +
 	  scale_color_manual(values=c(dark_blue, dark_yellow), guide=FALSE) +
@@ -235,7 +235,7 @@ bep_hist_plot <- function(summary, endpointLabel, cohortLabel, siteLabel) {
 	p <- ggplot(summary, aes(x=mark_value, y=mean, fill=status, color=status)) +
       geom_bar(position=position_dodge(), stat="identity") +
 	  geom_errorbar(aes(ymin=mean-sd, ymax=mean+sd), width=.2, position=position_dodge(.9)) +      
-      xlab("Hamming distance") +
+      xlab("Repeat count") +
       ylab("Proportion") +
 	  scale_fill_manual(values=c(light_blue, light_yellow), labels=c("Placebo", "Vaccine")) +
 	  scale_color_manual(values=c(dark_blue, dark_yellow), guide=FALSE) +   
@@ -327,24 +327,24 @@ summary = average_counts_across_sites(marks_data_c, locus, "hamming_3D7", age)
 hamming_plot_sites(summary, endpoint, locus, age)
 ```
 
-```{r bep-match-newborn-c, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE, dev=c('png', 'pdf'), fig.cap='Descriptive plot of match to 3D7 in NANP repeat region'}
+```{r bep-cat-newborn-c, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE, dev=c('png', 'pdf'), fig.cap='Descriptive plot of NANP repeat distribution binned to 37-39 repeats and 40-44 repeats'}
 endpoint = "Clinical Malaria by Month 14"
 age = "6-12 weeks"
 site = "5 major pooled"
-summary = average_counts_locus(marks_data_c, "BEP", "match_3D7", age)
-bep_match_plot(summary, endpoint, age, site)
+summary = average_counts_locus(marks_data_c, "BEP", "repeat_category", age)
+bep_cat_plot(summary, endpoint, age, site)
 ```
 
-```{r bep-match-infact-c, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE, dev=c('png', 'pdf'), fig.cap='Descriptive plot of match to 3D7 in NANP repeat region'}
+```{r bep-cat-infact-c, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE, dev=c('png', 'pdf'), fig.cap='Descriptive plot of NANP repeat distribution binned to 37-39 repeats and 40-44 repeats'}
 endpoint = "Clinical Malaria by Month 14"
 age = "5-17 months"
 site = "5 major pooled"
-summary = average_counts_locus(marks_data_c, "BEP", "match_3D7", age)
-bep_match_plot(summary, endpoint, age, site)
+summary = average_counts_locus(marks_data_c, "BEP", "repeat_category", age)
+bep_cat_plot(summary, endpoint, age, site)
 ```
 
 ```{r bep-hist-newborn-c, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE, dev=c('png', 'pdf'), fig.cap='Descriptive plot of NANP repeat distribution'}
-endpoint = "Any Malaria by Month 20"
+endpoint = "Clinical Malaria by Month 14"
 age = "6-12 weeks"
 site = "5 major pooled"
 summary = average_counts_locus(marks_data_c, "BEP", "repeat_count", age)
@@ -352,7 +352,7 @@ bep_hist_plot(summary, endpoint, age, site)
 ```
 
 ```{r bep-hist-infant-c, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE, dev=c('png', 'pdf'), fig.cap='Descriptive plot of NANP repeat distribution'}
-endpoint = "Any Malaria by Month 20"
+endpoint = "Clinical Malaria by Month 14"
 age = "5-17 months"
 site = "5 major pooled"
 summary = average_counts_locus(marks_data_c, "BEP", "repeat_count", age)
@@ -439,20 +439,20 @@ summary = average_counts_across_sites(marks_data_x, locus, "hamming_3D7", age)
 hamming_plot_sites(summary, endpoint, locus, age)
 ```
 
-```{r bep-match-newborn-x, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE, dev=c('png', 'pdf'), fig.cap='Descriptive plot of match to 3D7 in NANP repeat region'}
+```{r bep-cat-newborn-x, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE, dev=c('png', 'pdf'), fig.cap='Descriptive plot of NANP repeat distribution binned to 37-39 repeats and 40-44 repeats'}
 endpoint = "Any Malaria by Month 20"
 age = "6-12 weeks"
 site = "5 major pooled"
-summary = average_counts_locus(marks_data_c, "BEP", "match_3D7", age)
-bep_match_plot(summary, endpoint, age, site)
+summary = average_counts_locus(marks_data_c, "BEP", "repeat_category", age)
+bep_cat_plot(summary, endpoint, age, site)
 ```
 
-```{r bep-match-infact-x, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE, dev=c('png', 'pdf'), fig.cap='Descriptive plot of match to 3D7 in NANP repeat region'}
+```{r bep-cat-infact-x, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE, dev=c('png', 'pdf'), fig.cap='Descriptive plot of NANP repeat distribution binned to 37-39 repeats and 40-44 repeats'}
 endpoint = "Any Malaria by Month 20"
 age = "5-17 months"
 site = "5 major pooled"
-summary = average_counts_locus(marks_data_c, "BEP", "match_3D7", age)
-bep_match_plot(summary, endpoint, age, site)
+summary = average_counts_locus(marks_data_c, "BEP", "repeat_category", age)
+bep_cat_plot(summary, endpoint, age, site)
 ```
 
 ```{r bep-hist-newborn-x, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE, dev=c('png', 'pdf'), fig.cap='Descriptive plot of NANP repeat distribution'}

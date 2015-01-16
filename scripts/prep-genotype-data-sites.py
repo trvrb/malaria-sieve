@@ -62,13 +62,15 @@ def collect_data(subjects, seq_data, matched_samples):
 	locus_reader = csv.DictReader(open("qdata/sequences/" + locus + ".tsv"), delimiter='\t')		# list of dicts
 	for line in locus_reader:
 		subject = line['subject'] + "\t" + line['sample']
-		if line['sample'] in matched_samples:		
-			all_subjects.append(subject)
-			if (subject, locus) in seq_data:
-				seq_data[(subject, locus)].append(line)
-			else:
-				seq_data[(subject, locus)] = []
-				seq_data[(subject, locus)].append(line)			
+		read_count = int(line['reads'])
+		if read_count >= 20:		
+			if line['sample'] in matched_samples:		
+				all_subjects.append(subject)
+				if (subject, locus) in seq_data:
+					seq_data[(subject, locus)].append(line)
+				else:
+					seq_data[(subject, locus)] = []
+					seq_data[(subject, locus)].append(line)			
 	unique_subjects = set(all_subjects)		
 	subjects.extend(list(unique_subjects))
 	
@@ -128,20 +130,21 @@ def hamming_3D7(subjects, seq_data):
 			mark_data[(subject, locus)] = marks
 	return mark_data
 	
-def repeats_identical_3D7(subjects, seq_data):
-	"""Mark (subject, locus) as 1 if repeat count matches 3D7"""
+def repeat_category(subjects, seq_data):
+	"""Mark (subject, locus) as 0 if repeat count is 39 or less and 1 if repeat count is 40 or greater"""
 	locus = "BEP"
 	marks = {}	
 	for subject in subjects:
-		repeats_list = []	
+		repeats_list = []
 		if (subject, locus) in seq_data:
 			for line in seq_data[(subject, locus)]:
-				repeats_list.append(int(line['repeats']))	
-		mark = -1		
+				repeats_list.append(int(line['repeats']))
+		mark = -1
 		if len(repeats_list) > 0:
-			mark = 0
-		if 42 in repeats_list:
-			mark = 1
+			if repeats_list[0] <= 39:
+				mark = 0
+			if repeats_list[0] >= 40:
+				mark = 1
 		marks[(subject, locus)] = mark
 	return marks
 	
@@ -217,13 +220,13 @@ def print_marks(subjects, seq_data, mark_names, mark_data, study_site, age_cohor
 		mark = str(data[(subject, "NA")])			
 		line = [subject, "1", "NA", mark_name, mark, str(study_site[subject_id]), str(age_cohort[subject_id]), str(vaccine_status[subject_id])]
 		print "\t".join(line)		
-		
-		# repeats_identical_3D7
-		mark_name = 'repeats_identical_3D7'
+				
+		# repeat_category		
+		mark_name = 'repeat_category'
 		data = mark_data[mark_name]
 		mark = str(data[(subject, "BEP")])
-		line = [subject, "1", "BEP", 'match_3D7', mark, str(study_site[subject_id]), str(age_cohort[subject_id]), str(vaccine_status[subject_id])]
-		print "\t".join(line)
+		line = [subject, "1", "BEP", mark_name, mark, str(study_site[subject_id]), str(age_cohort[subject_id]), str(vaccine_status[subject_id])]
+		print "\t".join(line)				
 		
 		# repeat_count
 		mark_name = 'repeat_count'
@@ -249,7 +252,7 @@ def main(argv):
 	mark_data['multiplicity'] = multiplicity(subjects, seq_data)
 	mark_data['match_3D7'] = identical_3D7(subjects, seq_data)
 	mark_data['hamming_3D7'] = hamming_3D7(subjects, seq_data)	
-	mark_data['repeats_identical_3D7'] = repeats_identical_3D7(subjects, seq_data)
+	mark_data['repeat_category'] = repeat_category(subjects, seq_data)
 	mark_data['repeat_count'] = repeat_count(subjects, seq_data)
 	for index in range(1,95):
 		mark_data["match_3D7_" + str(index+293)] = identical_3D7_site(subjects, seq_data, "TEP", index)

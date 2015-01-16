@@ -93,6 +93,14 @@ python scripts/append-site-specific-match.py TEP > qdata/sequences/TEP_sites.tsv
 python scripts/append-site-specific-match.py SERA2 > qdata/sequences/SERA2_sites.tsv
 ```
 
+And site-specific mark files are then generated with:
+
+```
+python scripts/prep-genotype-data-sites.py C > adata/marks_data_c_sites.tsv
+python scripts/prep-genotype-data-sites.py X > adata/marks_data_x_sites.tsv
+```
+
+
 ## Descriptive statistics of genotype data
 
 * [Code for genotype analysis](descriptive-analysis/descriptive-analysis.Rmd)
@@ -112,8 +120,10 @@ Compile to LaTeX with:
 pandoc -s descriptive-analysis.md -o descriptive-analysis.tex
 ```
 
+And add `\usepackage{morefloats}` to the LaTeX header and grep for `.png` to `.pdf`.
+
 Compile to PDF with:
 
 ```
-pandoc -s descriptive-analysis.md -o descriptive-analysis.pdf
+pdflatex descriptive-analysis
 ```

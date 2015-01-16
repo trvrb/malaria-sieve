@@ -48,9 +48,9 @@ Make plotting functions.
 
 ![Descriptive plot of Hamming distance to 3D7 in C-terminus CSP](figures/hamming-infant-sites-c-1.png) 
 
-![Descriptive plot of match to 3D7 in NANP repeat region](figures/bep-match-newborn-c-1.png) 
+![Descriptive plot of NANP repeat distribution binned to 37-39 repeats and 40-44 repeats](figures/bep-cat-newborn-c-1.png) 
 
-![Descriptive plot of match to 3D7 in NANP repeat region](figures/bep-match-infact-c-1.png) 
+![Descriptive plot of NANP repeat distribution binned to 37-39 repeats and 40-44 repeats](figures/bep-cat-infact-c-1.png) 
 
 ![Descriptive plot of NANP repeat distribution](figures/bep-hist-newborn-c-1.png) 
 
@@ -76,9 +76,9 @@ Make plotting functions.
 
 ![Descriptive plot of Hamming distance to 3D7 in C-terminus CSP](figures/hamming-infant-sites-x-1.png) 
 
-![Descriptive plot of match to 3D7 in NANP repeat region](figures/bep-match-newborn-x-1.png) 
+![Descriptive plot of NANP repeat distribution binned to 37-39 repeats and 40-44 repeats](figures/bep-cat-newborn-x-1.png) 
 
-![Descriptive plot of match to 3D7 in NANP repeat region](figures/bep-match-infact-x-1.png) 
+![Descriptive plot of NANP repeat distribution binned to 37-39 repeats and 40-44 repeats](figures/bep-cat-infact-x-1.png) 
 
 ![Descriptive plot of NANP repeat distribution](figures/bep-hist-newborn-x-1.png) 
 
