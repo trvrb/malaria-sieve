@@ -111,3 +111,15 @@ Plot residue-specific match
 ![Descriptive plot of match to 3D7 in C-terminus CSP](figures/residue-specific-match-newborn-x-1.png) 
 
 ![Descriptive plot of match to 3D7 in C-terminus CSP](figures/residue-specific-match-infant-x-1.png) 
+
+## Hamming distance at signature sites
+
+
+
+![Descriptive plot of Hamming distance to 3D7 at 7 signature sites in C-terminus CSP](figures/hamming-sig-newborn-c-1.png) 
+
+![Descriptive plot of Hamming distance to 3D7 at 7 signature sites in C-terminus CSP](figures/hamming-sig-infant-c-1.png) 
+
+![Descriptive plot of Hamming distance to 3D7 at 7 signature sites in C-terminus CSP](figures/hamming-sig-newborn-x-1.png) 
+
+![Descriptive plot of Hamming distance to 3D7 at 7 signature sites in C-terminus CSP](figures/hamming-sig-infant-x-1.png) 

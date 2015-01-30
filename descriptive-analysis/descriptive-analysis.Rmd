@@ -567,3 +567,59 @@ subsetted = subset(marks_data_x, locus == "TEP")
 summary = average_counts_across_residues(subsetted, "TEP", age, residues_TEP)
 match_plot_residues(summary, endpoint, age, site)
 ```
+
+## Hamming distance at signature sites
+
+```{r hist_plots, include=FALSE}
+hamming_plot <- function(summary, endpointLabel, locusLabel, cohortLabel) {
+	summary$mark_value <- factor(summary$mark_value)	
+	summary$status <- factor(summary$status)
+	title = paste("Hamming distances to 3D7 across study sites\nEndpoint:", endpointLabel, "\nGenomic region:", locusLabel, "\nAge Cohort:", cohortLabel)
+	p <- ggplot(summary, aes(x=mark_value, y=mean, fill=status, color=status)) +
+      geom_bar(position=position_dodge(), stat="identity") +
+	  geom_errorbar(aes(ymin=mean-sd, ymax=mean+sd), width=.2, position=position_dodge(.9)) +      
+      xlab("Hamming distance") +
+      ylab("Proportion") +
+	  scale_fill_manual(values=c(light_blue, light_yellow), labels=c("Placebo", "Vaccine")) +
+	  scale_color_manual(values=c(dark_blue, dark_yellow), guide=FALSE) +  	  
+      theme_bw() +
+      ggtitle(title)   
+	return(p)
+}
+```
+
+```{r hamming-sig-newborn-c, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE, dev=c('png', 'pdf'), fig.cap='Descriptive plot of Hamming distance to 3D7 at 7 signature sites in C-terminus CSP'}
+endpoint = "Clinical Malaria by Month 14"
+locus = "TEP"
+age = "6-12 weeks"
+site = "5 major pooled"
+summary = average_counts_locus(marks_data_c, locus, "hamming_3D7_sig_sites", age)
+hamming_plot(summary, endpoint, "TEP signature sites", age)
+```
+
+```{r hamming-sig-infant-c, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE, dev=c('png', 'pdf'), fig.cap='Descriptive plot of Hamming distance to 3D7 at 7 signature sites in C-terminus CSP'}
+endpoint = "Clinical Malaria by Month 14"
+locus = "TEP"
+age = "5-17 months"
+site = "5 major pooled"
+summary = average_counts_locus(marks_data_c, locus, "hamming_3D7_sig_sites", age)
+hamming_plot(summary, endpoint, "TEP signature sites", age)
+```
+
+```{r hamming-sig-newborn-x, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE, dev=c('png', 'pdf'), fig.cap='Descriptive plot of Hamming distance to 3D7 at 7 signature sites in C-terminus CSP'}
+endpoint = "Any Malaria by Month 20"
+locus = "TEP"
+age = "6-12 weeks"
+site = "5 major pooled"
+summary = average_counts_locus(marks_data_x, locus, "hamming_3D7_sig_sites", age)
+hamming_plot(summary, endpoint, "TEP signature sites", age)
+```
+
+```{r hamming-sig-infant-x, dpi=150, fig.path='figures/', echo=FALSE, warning=FALSE, message=FALSE, dev=c('png', 'pdf'), fig.cap='Descriptive plot of Hamming distance to 3D7 at 7 signature sites in C-terminus CSP'}
+endpoint = "Any Malaria by Month 20"
+locus = "TEP"
+age = "5-17 months"
+site = "5 major pooled"
+summary = average_counts_locus(marks_data_x, locus, "hamming_3D7_sig_sites", age)
+hamming_plot(summary, endpoint, "TEP signature sites", age)
+```

@@ -176,7 +176,26 @@ def identical_3D7_site(subjects, seq_data, locus, index):
 					mark = 1
 				marks.append(mark)
 		mark_data[(subject, locus)] = marks
-	return mark_data		
+	return mark_data
+	
+def hamming_3D7_sig_sites(subjects, seq_data):
+	"""Mark (subject, locus) as with the number of differences to 3D7 at 7 signature sites"""
+	# sig sites are 299, 301, 317, 354, 356, 359, 361 in canonical CSP numbering
+	# sig sites are 6, 8, 24, 61, 63, 66, 68 in amplicon numbering
+	sig_sites = (6, 8, 24, 61, 63, 66, 68)
+	locus = "TEP"
+	mark_data = {}
+	for subject in subjects:
+		marks = []
+		if (subject, locus) in seq_data:
+			for line in seq_data[(subject, locus)]:
+				mark = 0
+				for site in sig_sites:
+					hamming = int(line["pep_3D7_hamming_" + str(site)])
+					mark += hamming
+				marks.append(mark)
+		mark_data[(subject, locus)] = marks
+	return mark_data			
 		
 def print_marks(subjects, seq_data, mark_names, mark_data, study_site, age_cohort, vaccine_status):
 	line = ["subject", "sample", "sample_count", "locus", "mark_name", "mark_value", "study_site", "age_cohort", "vaccine_status"]
@@ -213,6 +232,15 @@ def print_marks(subjects, seq_data, mark_names, mark_data, study_site, age_cohor
 			for index, mark in enumerate(marks):
 				line = [subject, str(index+1), locus, mark_name, str(mark), str(study_site[subject_id]), str(age_cohort[subject_id]), str(vaccine_status[subject_id])]
 				print "\t".join(line)						
+
+		# hamming_3D7_sig_sites
+		locus = "TEP"
+		mark_name = "hamming_3D7_sig_sites"
+		data = mark_data[mark_name]
+		marks = data[(subject, locus)]
+		for index, mark in enumerate(marks):
+			line = [subject, str(index+1), locus, mark_name, str(mark), str(study_site[subject_id]), str(age_cohort[subject_id]), str(vaccine_status[subject_id])]
+			print "\t".join(line)	
 								
 		# multiplicity
 		mark_name = 'multiplicity'
@@ -251,13 +279,14 @@ def main(argv):
 	mark_data = {}
 	mark_data['multiplicity'] = multiplicity(subjects, seq_data)
 	mark_data['match_3D7'] = identical_3D7(subjects, seq_data)
-	mark_data['hamming_3D7'] = hamming_3D7(subjects, seq_data)	
+	mark_data['hamming_3D7'] = hamming_3D7(subjects, seq_data)
 	mark_data['repeat_category'] = repeat_category(subjects, seq_data)
 	mark_data['repeat_count'] = repeat_count(subjects, seq_data)
 	for index in range(1,95):
 		mark_data["match_3D7_" + str(index+293)] = identical_3D7_site(subjects, seq_data, "TEP", index)
 	for index in range(1,85):
-		mark_data["match_3D7_" + str(index+35)] = identical_3D7_site(subjects, seq_data, "SERA2", index)		
+		mark_data["match_3D7_" + str(index+35)] = identical_3D7_site(subjects, seq_data, "SERA2", index)
+	mark_data['hamming_3D7_sig_sites'] = hamming_3D7_sig_sites(subjects, seq_data)				
 	print_marks(subjects, seq_data, mark_names, mark_data, study_site, age_cohort, vaccine_status)
 
 if __name__ == "__main__":
